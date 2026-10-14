@@ -24,8 +24,6 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;bord
     <h2>Вход в «Касса»</h2>
     <div id="authNotice" class="notice hidden"></div>
     <p>Вход без логина и пароля — по персональной ссылке, которую выдал владелец.</p>
-    <button id="firstOwnerBtn" style="width:100%">Первый вход владельца</button>
-    <p class="muted" style="font-size:12px">Владельцу нужно нажать кнопку только при первоначальном запуске, когда в базе ещё нет профиля владельца. Ответственный и сборщики входят по своим индивидуальным ссылкам.</p>
   </div>
 </div>
 <div id="appView" class="wrap hidden">
@@ -274,21 +272,6 @@ async function handleCreateUser(ev){
   $("userForm").reset();await loadData();notice("Ссылка создана. Скопируйте её в разделе «Ссылки доступа» и отправьте пользователю.",false,true);
  }catch(e){notice(friendlyError(e),true,true)}
 }
-async function firstOwnerSetup(){
- if(incomingAccessToken)return notice("Откройте персональную ссылку из приглашения. Первичная настройка здесь не требуется.",true);
- bootstrapInProgress=true;
- try{
-  if(!auth.currentUser)await signInAnonymously(auth);
-  currentUser=auth.currentUser;
-  const existing=await get(ref(db,"users"));
-  if(existing.exists()){bootstrapInProgress=false;return notice("В базе уже есть пользователи. Владелец должен открыть свою персональную ссылку.",true)}
-  const token=randomToken();
-  await set(ref(db,"users/"+currentUser.uid),{name:"Владелец",role:"owner",active:true,createdAt:stamp(),accessToken:token});
-  await set(ref(db,"accessLinks/"+token),{name:"Владелец",role:"owner",active:true,permanent:true,createdAt:stamp(),createdBy:currentUser.uid});
-  profile={uid:currentUser.uid,name:"Владелец",role:"owner",active:true,accessToken:token};
-  bootstrapInProgress=false;await enterApp(currentUser);notice("Первый вход выполнен. Сохраните личную ссылку владельца в разделе «Пользователи».",false,true);
- }catch(e){bootstrapInProgress=false;notice("Не удалось выполнить первый вход: "+friendlyError(e)+". В Firebase должен быть включён анонимный вход.",true)}
-}
 async function claimAccessLink(user,token){
  if(inviteInProgress)return;inviteInProgress=true;
  try{
@@ -315,7 +298,7 @@ async function enterApp(user){
  $("authView").classList.add("hidden");$("appView").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");$("who").textContent=myName()+" · "+roleName(profile.role);
  hideNotice(true);await loadData();showPage("dashboard");
 }
-$("firstOwnerBtn").onclick=firstOwnerSetup;
+
 $("logoutBtn").onclick=()=>signOut(auth);
 $("collectionForm").addEventListener("submit",handleCollection);
 $("transferForm").addEventListener("submit",handleTransfer);
@@ -337,7 +320,7 @@ onAuthStateChanged(auth,async user=>{
   if(!p.exists()){
     if(incomingAccessToken){await claimAccessLink(user,incomingAccessToken);return}
     if(inviteInProgress)return;
-    await signOut(auth);notice("Профиль не найден. Откройте персональную ссылку владельца или нажмите «Первый вход владельца» при первоначальном запуске.",true);return;
+    await signOut(auth);notice("Профиль не найден. Откройте действующую персональную ссылку доступа.",true);return;
   }
   profile={uid:user.uid,...p.val()};await enterApp(user);
  }catch(e){notice("Ошибка входа: "+friendlyError(e),true)}
