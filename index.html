@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#172554">
+<title>Касса</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c;--amber:#a16207}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+header{background:var(--navy);color:#fff;padding:16px 20px;display:flex;gap:12px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:22px}header .sub{font-size:12px;opacity:.8}.wrap{max-width:1200px;margin:auto;padding:18px}
+button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;cursor:pointer;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e2e8f0;color:#172033}.danger{background:#b91c1c}.success{background:#15803d}.small{padding:6px 9px;font-size:13px}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:var(--text)}label{font-size:13px;color:#334155;display:block;margin:9px 0 5px}textarea{min-height:70px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 3px 12px #0f172a08;margin-bottom:14px}.metric .label{color:var(--muted);font-size:13px}.metric .value{font-size:25px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{background:#e2e8f0;color:#334155}.tabs button.active{background:var(--navy);color:#fff}.hidden{display:none!important}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;color:var(--muted);white-space:nowrap}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;background:#e2e8f0}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}.notice{padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:14px;margin-bottom:14px}.error{background:#fef2f2;color:#991b1b}.success-note{background:#f0fdf4;color:#166534}.auth{max-width:430px;margin:7vh auto;padding:22px}.auth h2{margin-top:0}.actions{display:flex;gap:6px;flex-wrap:wrap}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.section-title h2{font-size:18px;margin:0 0 12px}.foot{font-size:12px;color:var(--muted);padding:18px 0}.pill{padding:4px 8px;border-radius:7px;background:#f1f5f9;font-size:12px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.wrap{padding:12px}.metric .value{font-size:21px}header{padding:13px 14px}}
+@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.metric .value{font-size:19px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<header><div><h1>Касса</h1><div class="sub">Касса строительства · учёт сборов, передач и расходов</div></div><div class="row" style="flex:0 1 auto"><span id="who" class="sub"></span><button id="logoutBtn" class="secondary small hidden">Выйти</button></div></header>
+<div id="authView" class="wrap">
+  <div class="card auth">
+    <h2>Вход в «Касса»</h2>
+    <div id="authNotice" class="notice hidden"></div>
+    <p>Вход без логина и пароля — по персональной ссылке, которую выдал владелец.</p>
+    <button id="firstOwnerBtn" style="width:100%">Первый вход владельца</button>
+    <p class="muted" style="font-size:12px">Владельцу нужно нажать кнопку только при первоначальном запуске, когда в базе ещё нет профиля владельца. Ответственный и сборщики входят по своим индивидуальным ссылкам.</p>
+  </div>
+</div>
+<div id="appView" class="wrap hidden">
+  <div id="globalNotice" class="notice hidden"></div>
+  <div class="tabs" id="tabs"></div>
+  <section id="page-dashboard">
+    <div class="grid" id="metrics"></div>
+    <div class="two" style="margin-top:14px">
+      <div class="card"><div class="section-title"><h2>Последние операции</h2></div><div id="recent"></div></div>
+      <div class="card"><div class="section-title"><h2>Сверка денег</h2></div><div id="balances"></div><p class="muted" style="font-size:12px">Баланс по учёту не заменяет фактический пересчёт наличных. Сверку можно отмечать отдельно при проверке.</p></div>
+    </div>
+  </section>
+  <section id="page-collections" class="hidden">
+    <div class="card"><h2>Добавить поступление</h2><form id="collectionForm">
+      <div class="two"><div><label>Дата</label><input id="collectionDate" type="date" required></div><div><label>Сумма, ₽</label><input id="collectionAmount" type="number" min="0.01" step="0.01" required></div></div>
+      <label>Описание / от кого получены деньги (необязательно)</label><input id="collectionNote" maxlength="250" placeholder="Например: наличный сбор">
+      <div style="height:10px"></div><button>Сохранить поступление</button>
+    </form></div><div class="card"><h2>Поступления</h2><div id="collectionsTable"></div></div>
+  </section>
+  <section id="page-transfers" class="hidden">
+    <div class="card"><h2>Передать деньги ответственному</h2><form id="transferForm">
+      <div class="two"><div><label>Дата передачи</label><input id="transferDate" type="date" required></div><div><label>Сумма, ₽</label><input id="transferAmount" type="number" min="0.01" step="0.01" required></div></div>
+      <label>Комментарий (необязательно)</label><input id="transferNote" maxlength="250" placeholder="Например: передача наличных">
+      <div style="height:10px"></div><button>Отправить на подтверждение</button>
+    </form></div><div class="card"><h2>Передачи</h2><div id="transfersTable"></div></div>
+  </section>
+  <section id="page-expenses" class="hidden">
+    <div class="card"><h2>Добавить расход</h2><form id="expenseForm">
+      <div class="two"><div><label>Дата</label><input id="expenseDate" type="date" required></div><div><label>Сумма, ₽</label><input id="expenseAmount" type="number" min="0.01" step="0.01" required></div></div>
+      <label>На что потрачено</label><input id="expensePurpose" maxlength="250" required placeholder="Например: цемент, доставка, работа">
+      <label>Комментарий (необязательно)</label><textarea id="expenseNote" maxlength="500"></textarea>
+      <label>Фото чека (необязательно, до 2 МБ)</label><input id="expenseReceipt" type="file" accept="image/*">
+      <div style="height:10px"></div><button>Отправить расход</button>
+      <p class="muted" style="font-size:12px">Расход сборщика требует подтверждения главного ответственного. Расход ответственного записывается в общую кассу сразу.</p>
+    </form></div><div class="card"><h2>Расходы</h2><div id="expensesTable"></div></div>
+  </section>
+  <section id="page-approvals" class="hidden">
+    <div class="card"><h2>Ожидают подтверждения</h2><div id="pendingTable"></div></div>
+  </section>
+  <section id="page-reports" class="hidden">
+    <div class="card"><h2>Отчёт</h2><div class="row"><div><label>С даты</label><input type="date" id="reportFrom"></div><div><label>По дату</label><input type="date" id="reportTo"></div><div class="fit" style="align-self:end"><button id="reportApply">Применить</button></div><div class="fit" style="align-self:end"><button id="exportCsv" class="secondary">Экспорт CSV</button></div></div><div id="reportContent" style="margin-top:14px"></div></div>
+  </section>
+  <section id="page-users" class="hidden">
+    <div class="card"><h2>Пользователи</h2><p class="muted">Максимум: владелец + один главный ответственный + до трёх сборщиков (всего не более пяти аккаунтов).</p>
+      <form id="userForm"><div class="two"><div><label>Имя</label><input id="newName" required maxlength="80"></div><div><label>Роль</label><select id="newRole"><option value="responsible">Главный ответственный</option><option value="collector">Сборщик</option></select></div></div>
+      <p class="muted" style="font-size:12px">Создаётся индивидуальная ссылка. Отправьте её нужному человеку. Сборщик активирует свою ссылку при первом открытии.</p><button>Создать ссылку доступа</button></form>
+    </div><div class="card"><h2>Пользователи</h2><div id="usersTable"></div></div><div class="card"><h2>Ссылки доступа</h2><div id="linksTable"></div><p class="muted" style="font-size:12px">Не пересылайте чужие ссылки: ссылка определяет роль вошедшего пользователя.</p></div>
+  </section>
+  <section id="page-history" class="hidden"><div class="card"><h2>Журнал операций</h2><div id="historyTable"></div></div></section>
+  <div class="foot">«Касса» · Данные синхронизируются через Firebase. Вход по персональным ссылкам. Для работы должны быть применены правила Firebase из комплекта и включён анонимный вход.</div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase, ref, get, set, push, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCcBRKtQpboKHKj8b8m2za18RxeVt3HYk0",
+  authDomain: "moy-proect-6c978.firebaseapp.com",
+  databaseURL: "https://moy-proect-6c978-default-rtdb.firebaseio.com",
+  projectId: "moy-proect-6c978",
+  storageBucket: "moy-proect-6c978.firebasestorage.app",
+  messagingSenderId: "356139023031",
+  appId: "1:356139023031:web:cc33b8de8b03b6bfc8eb32",
+  measurementId: "G-VQZ3JBF63V"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const storage = getStorage(app);
+const secondaryApp = initializeApp(firebaseConfig, "secondaryAuthApp");
+const secondaryAuth = getAuth(secondaryApp);
+
+const $ = id => document.getElementById(id);
+const money = n => new Intl.NumberFormat("ru-RU",{style:"currency",currency:"RUB",maximumFractionDigits:2}).format(Number(n||0));
+const dateNow = () => new Date().toLocaleDateString("sv-SE");
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const stamp = () => new Date().toISOString();
+const id = () => push(ref(db,"_ids")).key;
+let currentUser=null, profile=null, users={}, collections={}, transfers={}, expenses={}, accessLinks={}, allProfiles={}, activePage="dashboard", listeners=[], allLoaded=false, bootstrapInProgress=false, inviteInProgress=false, autoLinkAttempted=false;
+const urlParams = new URLSearchParams(location.search);
+const incomingAccessToken = urlParams.get("access");
+function randomToken(){const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);return Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("")}
+function accessUrl(token){const u=new URL(location.href);u.search="";u.hash="";u.searchParams.set("access",token);return u.href}
+function clearAccessParam(){const u=new URL(location.href);u.searchParams.delete("access");history.replaceState({},"",u.pathname+u.search+u.hash)}
+
+function notice(message,error=false,global=false){const el=$(global?"globalNotice":"authNotice");el.textContent=message;el.classList.remove("hidden","error","success-note");el.classList.add(error?"error":"success-note");}
+function hideNotice(global=false){$(global?"globalNotice":"authNotice").classList.add("hidden");}
+function setDefaults(){["collectionDate","transferDate","expenseDate"].forEach(k=>$(k).value=dateNow());}
+function isOwner(){return profile?.role==="owner"}
+function isResponsible(){return profile?.role==="responsible"}
+function canSeeAll(){return isOwner()||isResponsible()}
+function canApprove(){return canSeeAll()}
+function myName(){return profile?.name||currentUser?.email||"Пользователь"}
+function roleName(role){return ({owner:"Владелец",responsible:"Главный ответственный",collector:"Сборщик"})[role]||role}
+function fmtDate(d){if(!d)return "—";return new Date(d+"T12:00:00").toLocaleDateString("ru-RU")}
+function entries(obj){return Object.entries(obj||{}).map(([key,val])=>({id:key,...val})).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""))}
+function allowedTabs(){let t=[["dashboard","Главная"],["collections","Поступления"],["transfers","Передачи"],["expenses","Расходы"]];if(canApprove())t.push(["approvals","Подтверждения"]);if(canSeeAll())t.push(["reports","Отчёты"]);if(isOwner())t.push(["users","Пользователи"]);t.push(["history","История"]);return t}
+function showPage(page){activePage=page;document.querySelectorAll("#appView section[id^='page-']").forEach(s=>s.classList.add("hidden"));$("page-"+page)?.classList.remove("hidden");document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));renderPage()}
+function buildTabs(){$("tabs").innerHTML=allowedTabs().map(([p,n])=>`<button data-page="${p}" class="${p===activePage?"active":""}">${n}</button>`).join("");$("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>showPage(b.dataset.page))}
+async function getObject(path){const s=await get(ref(db,path));return s.exists()?s.val():{}}
+async function loadData(){
+  if(!currentUser||!profile)return;
+  try{
+    let c,t,e,u;
+    if(canSeeAll()){
+      [c,t,e,u]=await Promise.all([getObject("collections"),getObject("transfers"),getObject("expenses"),getObject("users")]);
+      accessLinks=isOwner()?await getObject("accessLinks"):{};
+    } else {
+      const [cs,ts,es,us]=await Promise.all([
+        get(query(ref(db,"collections"),orderByChild("createdBy"),equalTo(currentUser.uid))),
+        get(query(ref(db,"transfers"),orderByChild("collectorUid"),equalTo(currentUser.uid))),
+        get(query(ref(db,"expenses"),orderByChild("createdBy"),equalTo(currentUser.uid))),
+        get(ref(db,"users/"+currentUser.uid))
+      ]);
+      c=cs.exists()?cs.val():{}; t=ts.exists()?ts.val():{}; e=es.exists()?es.val():{};
+      u=us.exists()?{[currentUser.uid]:us.val()}:{};
+    }
+    collections=c;transfers=t;expenses=e;users=u;allProfiles=u;
+    // Non-owner collectors only render their own records, while rules independently enforce access.
+    renderPage(); allLoaded=true;
+  }catch(err){notice("Не удалось загрузить данные: "+friendlyError(err),true,true)}
+}
+function ownRecord(r){return canSeeAll()||r?.createdBy===currentUser.uid||r?.collectorUid===currentUser.uid}
+function visibleCollections(){return entries(collections).filter(ownRecord)}
+function visibleTransfers(){return entries(transfers).filter(r=>canSeeAll()||r.collectorUid===currentUser.uid)}
+function visibleExpenses(){return entries(expenses).filter(ownRecord)}
+function fmtUser(uid){return users?.[uid]?.name||users?.[uid]?.email||"Пользователь"}
+function balanceFor(uid){
+  const collected=entries(collections).filter(x=>x.createdBy===uid).reduce((s,x)=>s+Number(x.amount||0),0);
+  const transferred=entries(transfers).filter(x=>x.collectorUid===uid&&x.status==="approved").reduce((s,x)=>s+Number(x.amount||0),0);
+  const spent=entries(expenses).filter(x=>x.createdBy===uid&&x.status==="approved").reduce((s,x)=>s+Number(x.amount||0),0);
+  return {collected,transferred,spent,balance:collected-transferred-spent};
+}
+function approvedExpenses(){return entries(expenses).filter(x=>x.status==="approved")}
+function totalCollected(){return entries(collections).reduce((s,x)=>s+Number(x.amount||0),0)}
+function totalSpent(){return approvedExpenses().reduce((s,x)=>s+Number(x.amount||0),0)}
+function responsibleCash(){
+  const incoming=entries(transfers).filter(x=>x.status==="approved").reduce((s,x)=>s+Number(x.amount||0),0);
+  const ownExpenses=approvedExpenses().filter(x=>x.createdBy===profile.uid).reduce((s,x)=>s+Number(x.amount||0),0);
+  return incoming-ownExpenses;
+}
+function totalCollectorCash(){return Object.keys(users||{}).filter(uid=>users[uid]?.role==="collector").reduce((s,uid)=>s+balanceFor(uid).balance,0)}
+function renderDashboard(){
+  const all=canSeeAll();
+  const collected=all?totalCollected():balanceFor(currentUser.uid).collected;
+  const spent=all?totalSpent():entries(expenses).filter(x=>x.createdBy===currentUser.uid&&x.status==="approved").reduce((s,x)=>s+Number(x.amount||0),0);
+  const cash=all?(totalCollected()-totalSpent()):balanceFor(currentUser.uid).balance;
+  const metrics=all?[
+    ["Всего собрано",money(totalCollected())],["Расходы на строительство",money(totalSpent())],["Остаток у сборщиков",money(totalCollectorCash())],["Остаток у ответственного",money(responsibleCash())],["Общий остаток",money(totalCollected()-totalSpent())],["Ожидают подтверждения",String(pendingCount())],["Передачи подтверждены",money(entries(transfers).filter(x=>x.status==="approved").reduce((s,x)=>s+Number(x.amount||0),0))],["Операции за всё время",String(entries(collections).length+entries(transfers).length+entries(expenses).length)]
+  ]:[
+    ["Мои сборы",money(collected)],["Передано ответственному",money(balanceFor(currentUser.uid).transferred)],["Мои подтверждённые расходы",money(spent)],["Мой расчётный остаток",money(cash)]
+  ];
+  $("metrics").innerHTML=metrics.map(([l,v])=>`<div class="card metric"><div class="label">${esc(l)}</div><div class="value">${esc(v)}</div></div>`).join("");
+  const rec=[...entries(collections).map(x=>({...x,type:"Поступление"})),...entries(transfers).map(x=>({...x,type:"Передача"})),...entries(expenses).map(x=>({...x,type:"Расход"}))].filter(ownRecord).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
+  $("recent").innerHTML=rec.length?table(["Дата","Операция","Сумма","Статус"],rec.map(x=>[fmtDate(x.date),x.type,money(x.amount),statusBadge(x.status||"approved")])):"<p class='muted'>Операций пока нет.</p>";
+  if(all){
+    const rows=Object.entries(users||{}).filter(([uid,u])=>u?.role==="collector").map(([uid,u])=>[esc(u.name||u.email),money(balanceFor(uid).collected),money(balanceFor(uid).transferred),money(balanceFor(uid).spent),money(balanceFor(uid).balance)]);
+    rows.push(["<b>Главный ответственный</b>","—","—",money(approvedExpenses().filter(x=>x.createdBy===profile.uid).reduce((s,x)=>s+Number(x.amount||0),0)),money(responsibleCash())]);
+    $("balances").innerHTML=table(["Пользователь","Собрано","Передано","Расходы","Остаток"],rows);
+  }else{$("balances").innerHTML=`<p>Расчётный остаток: <b>${money(balanceFor(currentUser.uid).balance)}</b></p><p class="muted">Остаток рассчитан по зарегистрированным операциям.</p>`}
+}
+function statusBadge(status){let label=status==="pending"?"Ожидает":status==="approved"?"Подтверждено":status==="rejected"?"Отклонено":status==="correction"?"Корректировка":status;let cls=status==="approved"?"ok":status==="pending"?"wait":"no";return `<span class="badge ${cls}">${esc(label)}</span>`}
+function table(headers,rows){if(!rows.length)return "<p class='muted'>Записей пока нет.</p>";return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v??"—"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
+function renderCollections(){
+  const rows=visibleCollections().map(x=>[fmtDate(x.date),money(x.amount),esc(x.note||"—"),esc(fmtUser(x.createdBy)),esc(x.createdBy===currentUser.uid?"Вы":"Сборщик")]);
+  $("collectionsTable").innerHTML=table(["Дата","Сумма","Описание","Кто внёс запись",""],rows);
+  $("collectionForm").classList.toggle("hidden",profile.role!=="collector");
+}
+function renderTransfers(){
+ const rows=visibleTransfers().map(x=>[fmtDate(x.date),money(x.amount),esc(fmtUser(x.collectorUid)),statusBadge(x.status),esc(x.note||"—"),canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-transfer="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-transfer="${x.id}" data-decision="rejected">Отклонить</button></div>`:"—"]);
+ $("transfersTable").innerHTML=table(["Дата","Сумма","Сборщик","Статус","Комментарий","Действия"],rows);
+ $("transfersTable").querySelectorAll("[data-transfer]").forEach(b=>b.onclick=()=>decide("transfers",b.dataset.transfer,b.dataset.decision));
+}
+function renderExpenses(){
+ const rows=visibleExpenses().map(x=>[fmtDate(x.date),money(x.amount),esc(x.purpose),esc(fmtUser(x.createdBy)),statusBadge(x.status),x.receiptUrl?`<a href="${esc(x.receiptUrl)}" target="_blank" rel="noopener">Чек</a>`:"—",canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-expense="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-expense="${x.id}" data-decision="rejected">Отклонить</button></div>`:"—"]);
+ $("expensesTable").innerHTML=table(["Дата","Сумма","Назначение","Кто создал","Статус","Чек","Действия"],rows);
+ $("expensesTable").querySelectorAll("[data-expense]").forEach(b=>b.onclick=()=>decide("expenses",b.dataset.expense,b.dataset.decision));
+}
+function pendingCount(){return entries(transfers).filter(x=>x.status==="pending").length+entries(expenses).filter(x=>x.status==="pending").length}
+function renderApprovals(){
+ const rows=[
+ ...entries(transfers).filter(x=>x.status==="pending").map(x=>[fmtDate(x.date),"Передача ответственному",money(x.amount),esc(fmtUser(x.collectorUid)),esc(x.note||"—"),`<button class="small success" data-type="transfers" data-id="${x.id}" data-decision="approved">Подтвердить</button> <button class="small danger" data-type="transfers" data-id="${x.id}" data-decision="rejected">Отклонить</button>`]),
+ ...entries(expenses).filter(x=>x.status==="pending").map(x=>[fmtDate(x.date),"Расход: "+esc(x.purpose),money(x.amount),esc(fmtUser(x.createdBy)),esc(x.note||"—"),`<button class="small success" data-type="expenses" data-id="${x.id}" data-decision="approved">Подтвердить</button> <button class="small danger" data-type="expenses" data-id="${x.id}" data-decision="rejected">Отклонить</button>`])
+ ];
+ $("pendingTable").innerHTML=table(["Дата","Операция","Сумма","Автор","Комментарий","Решение"],rows);
+ $("pendingTable").querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>decide(b.dataset.type,b.dataset.id,b.dataset.decision));
+}
+async function decide(type,key,decision){
+ if(!canApprove())return;
+ const item=(type==="transfers"?transfers:expenses)[key];if(!item||item.status!=="pending")return;
+ const reason=decision==="rejected"?prompt("Причина отклонения (обязательно):"):"";
+ if(decision==="rejected"&&!reason?.trim())return alert("Укажите причину отклонения.");
+ try{await update(ref(db,`${type}/${key}`),{status:decision,reviewedBy:currentUser.uid,reviewedAt:stamp(),reviewNote:reason||""});await addAudit("review_"+type,{recordId:key,decision,reason:reason||""});notice("Решение сохранено.",false,true);await loadData()}catch(e){notice(friendlyError(e),true,true)}
+}
+function renderUsers(){
+  const rows=Object.entries(users||{}).map(([uid,u])=>[esc(u.name||"—"),`<span class="badge">${esc(roleName(u.role))}</span>`,uid===currentUser.uid?"Вы":"—"]);
+  $("usersTable").innerHTML=table(["Имя","Роль","Статус"],rows);
+  const links=Object.entries(accessLinks||{}).map(([token,l])=>({token,...l}));
+  if(profile?.accessToken&&!links.some(l=>l.token===profile.accessToken))links.unshift({token:profile.accessToken,name:"Владелец",role:"owner",active:true,permanent:true});
+  const linkRows=links.map(l=>[esc(l.name||"Пользователь"),esc(roleName(l.role)),l.permanent?"Постоянная ссылка владельца":(l.active?"Ожидает первого входа":"Активирована"),`<button class="small" data-copy-link="${esc(l.token)}">Копировать ссылку</button>`]);
+  if(!profile?.accessToken)linkRows.unshift(["Владелец",esc(roleName("owner")),"Ссылка ещё не создана",'<button class="small" data-create-owner-link="1">Создать ссылку владельца</button>']);
+  $("linksTable").innerHTML=table(["Имя","Роль","Состояние","Ссылка"],linkRows);
+  $("linksTable").querySelectorAll("[data-copy-link]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(accessUrl(b.dataset.copyLink));notice("Ссылка скопирована. Отправьте её пользователю.",false,true)}catch(e){prompt("Скопируйте персональную ссылку:",accessUrl(b.dataset.copyLink))}});
+  $("linksTable").querySelector("[data-create-owner-link]")?.addEventListener("click",createOwnerAccessLink);
+} 
+async function createOwnerAccessLink(){
+ if(!isOwner())return;
+ try{const token=randomToken();await set(ref(db,"accessLinks/"+token),{name:"Владелец",role:"owner",active:true,permanent:true,createdAt:stamp(),createdBy:currentUser.uid});await update(ref(db,"users/"+currentUser.uid),{accessToken:token});profile.accessToken=token;await loadData();notice("Постоянная ссылка владельца создана. Сохраните её.",false,true)}catch(e){notice(friendlyError(e),true,true)}
+}
+function renderHistory(){
+ const rows=[...entries(collections).map(x=>({...x,type:"Поступление"})),...entries(transfers).map(x=>({...x,type:"Передача"})),...entries(expenses).map(x=>({...x,type:"Расход"}))].filter(ownRecord).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).map(x=>[fmtDate(x.date),esc(x.type),money(x.amount),esc(fmtUser(x.createdBy||x.collectorUid)),statusBadge(x.status||"approved"),esc(x.note||x.purpose||"—")]);
+ $("historyTable").innerHTML=table(["Дата","Тип","Сумма","Автор","Статус","Описание"],rows);
+}
+function renderReport(){
+ const from=$("reportFrom").value,to=$("reportTo").value;
+ const inRange=x=>(!from||x.date>=from)&&(!to||x.date<=to);
+ const c=entries(collections).filter(x=>inRange(x)&& (canSeeAll()||x.createdBy===currentUser.uid));
+ const e=entries(expenses).filter(x=>inRange(x)&&x.status==="approved"&&(canSeeAll()||x.createdBy===currentUser.uid));
+ const tr=entries(transfers).filter(x=>inRange(x)&& (canSeeAll()||x.collectorUid===currentUser.uid));
+ const totalC=c.reduce((s,x)=>s+Number(x.amount||0),0),totalE=e.reduce((s,x)=>s+Number(x.amount||0),0);
+ $("reportContent").innerHTML=`<div class="grid"><div class="card metric"><div class="label">Поступления</div><div class="value">${money(totalC)}</div></div><div class="card metric"><div class="label">Подтверждённые расходы</div><div class="value">${money(totalE)}</div></div><div class="card metric"><div class="label">Передачи (сумма записей)</div><div class="value">${money(tr.reduce((s,x)=>s+Number(x.amount||0),0))}</div></div><div class="card metric"><div class="label">Поступления минус расходы</div><div class="value">${money(totalC-totalE)}</div></div></div>`;
+}
+function renderPage(){if(!profile)return;buildTabs();renderDashboard();renderCollections();renderTransfers();renderExpenses();if(canApprove())renderApprovals();if(isOwner())renderUsers();renderHistory();renderReport();$("collectionForm").classList.toggle("hidden",profile.role!=="collector");$("transferForm").classList.toggle("hidden",profile.role!=="collector");$("expenseForm").classList.toggle("hidden",!(profile.role==="collector"||canSeeAll()));}
+async function addAudit(action,details={}){
+ const key=push(ref(db,"audit")).key;
+ await set(ref(db,"audit/"+key),{action,details,actorUid:currentUser.uid,actorName:myName(),createdAt:stamp()});
+}
+function friendlyError(err){const c=err?.code||"";if(c.includes("operation-not-allowed"))return "В Firebase нужно один раз включить Authentication → Anonymous (анонимный вход).";if(c.includes("permission-denied"))return "Нет доступа. Проверьте роль пользователя и правила Firebase.";if(c.includes("email-already-in-use"))return "Этот email уже зарегистрирован.";if(c.includes("invalid-email"))return "Неверный формат email.";if(c.includes("weak-password"))return "Пароль должен содержать не менее 6 символов.";if(c.includes("wrong-password")||c.includes("invalid-credential"))return "Неверная почта или пароль.";if(c.includes("network-request-failed"))return "Нет соединения с интернетом.";return err?.message||"Неизвестная ошибка."}
+async function handleCollection(ev){ev.preventDefault();const amount=Number($("collectionAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const key=push(ref(db,"collections")).key;const data={date:$("collectionDate").value,amount,note:$("collectionNote").value.trim(),createdBy:currentUser.uid,createdByName:myName(),status:"approved",createdAt:stamp()};try{await set(ref(db,"collections/"+key),data);await addAudit("collection_created",{recordId:key,amount});$("collectionForm").reset();setDefaults();await loadData();notice("Поступление сохранено.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
+async function handleTransfer(ev){ev.preventDefault();const amount=Number($("transferAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const bal=balanceFor(currentUser.uid).balance;if(profile.role==="collector"&&amount>bal)return alert("Сумма превышает расчётный остаток у вас. Проверьте поступления, передачи и подтверждённые расходы.");const key=push(ref(db,"transfers")).key;const data={date:$("transferDate").value,amount,note:$("transferNote").value.trim(),collectorUid:currentUser.uid,collectorName:myName(),createdBy:currentUser.uid,status:"pending",createdAt:stamp()};try{await set(ref(db,"transfers/"+key),data);await addAudit("transfer_requested",{recordId:key,amount});$("transferForm").reset();setDefaults();await loadData();notice("Передача отправлена на подтверждение.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
+async function handleExpense(ev){ev.preventDefault();const amount=Number($("expenseAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const purpose=$("expensePurpose").value.trim();if(!purpose)return alert("Укажите назначение расхода.");const file=$("expenseReceipt").files[0];if(file&&file.size>2*1024*1024)return alert("Файл чека должен быть не больше 2 МБ.");const key=push(ref(db,"expenses")).key;let receiptUrl="";try{if(file){const path=`receipts/${currentUser.uid}/${key}_${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;const r=storageRef(storage,path);await uploadBytes(r,file);receiptUrl=await getDownloadURL(r)}const immediate=canSeeAll();const data={date:$("expenseDate").value,amount,purpose,note:$("expenseNote").value.trim(),createdBy:currentUser.uid,createdByName:myName(),status:immediate?"approved":"pending",createdAt:stamp(),receiptUrl};await set(ref(db,"expenses/"+key),data);await addAudit("expense_created",{recordId:key,amount,purpose,status:data.status});$("expenseForm").reset();setDefaults();await loadData();notice(immediate?"Расход сохранён.":"Расход отправлен ответственному на подтверждение.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
+async function handleCreateUser(ev){
+ ev.preventDefault();if(!isOwner())return;
+ const name=$("newName").value.trim(),role=$("newRole").value;
+ if(!name)return alert("Укажите имя пользователя.");
+ try{
+  const all=await getObject("users"),existing=Object.values(all||{});
+  if(existing.length+Object.values(accessLinks||{}).filter(x=>x.active&&!x.permanent).length>=5)return alert("Достигнут лимит: владелец + ответственный + до трёх сборщиков.");
+  if(role==="responsible"&&existing.some(u=>u.role==="responsible")||role==="responsible"&&Object.values(accessLinks||{}).some(x=>x.role==="responsible"&&x.active))return alert("Главный ответственный уже создан или приглашён.");
+  if(role==="collector"&&existing.filter(u=>u.role==="collector").length+Object.values(accessLinks||{}).filter(x=>x.role==="collector"&&x.active).length>=3)return alert("Можно создать не более трёх сборщиков.");
+  const token=randomToken();
+  await set(ref(db,"accessLinks/"+token),{name,role,active:true,permanent:false,createdAt:stamp(),createdBy:currentUser.uid});
+  await addAudit("access_link_created",{name,role});
+  $("userForm").reset();await loadData();notice("Ссылка создана. Скопируйте её в разделе «Ссылки доступа» и отправьте пользователю.",false,true);
+ }catch(e){notice(friendlyError(e),true,true)}
+}
+async function firstOwnerSetup(){
+ if(incomingAccessToken)return notice("Откройте персональную ссылку из приглашения. Первичная настройка здесь не требуется.",true);
+ bootstrapInProgress=true;
+ try{
+  if(!auth.currentUser)await signInAnonymously(auth);
+  currentUser=auth.currentUser;
+  const existing=await get(ref(db,"users"));
+  if(existing.exists()){bootstrapInProgress=false;return notice("В базе уже есть пользователи. Владелец должен открыть свою персональную ссылку.",true)}
+  const token=randomToken();
+  await set(ref(db,"users/"+currentUser.uid),{name:"Владелец",role:"owner",active:true,createdAt:stamp(),accessToken:token});
+  await set(ref(db,"accessLinks/"+token),{name:"Владелец",role:"owner",active:true,permanent:true,createdAt:stamp(),createdBy:currentUser.uid});
+  profile={uid:currentUser.uid,name:"Владелец",role:"owner",active:true,accessToken:token};
+  bootstrapInProgress=false;await enterApp(currentUser);notice("Первый вход выполнен. Сохраните личную ссылку владельца в разделе «Пользователи».",false,true);
+ }catch(e){bootstrapInProgress=false;notice("Не удалось выполнить первый вход: "+friendlyError(e)+". В Firebase должен быть включён анонимный вход.",true)}
+}
+async function claimAccessLink(user,token){
+ if(inviteInProgress)return;inviteInProgress=true;
+ try{
+  const existingProfile=await get(ref(db,"users/"+user.uid));
+  if(existingProfile.exists()){
+    profile={uid:user.uid,...existingProfile.val()};clearAccessParam();inviteInProgress=false;await enterApp(user);return;
+  }
+  const snap=await get(ref(db,"accessLinks/"+token));
+  if(!snap.exists())throw new Error("Ссылка недействительна.");
+  const link=snap.val();if(!link.active&&!link.permanent)throw new Error("Эта ссылка уже была активирована. Попросите владельца создать новую.");
+  const profileData={name:link.name,role:link.role,active:true,createdAt:stamp(),inviteToken:token,accessToken:link.role==="owner"?token:undefined};
+  Object.keys(profileData).forEach(k=>profileData[k]===undefined&&delete profileData[k]);
+  await set(ref(db,"users/"+user.uid),profileData);
+  if(!link.permanent)await update(ref(db,"accessLinks/"+token),{active:false,claimedBy:user.uid,claimedAt:stamp()});
+  if(link.role==="owner"&&!link.permanent)await update(ref(db,"accessLinks/"+token),{permanent:true,active:true});
+  await addAudit("access_link_claimed",{role:link.role,name:link.name});
+  profile={uid:user.uid,...profileData};clearAccessParam();inviteInProgress=false;await enterApp(user);
+ }catch(e){inviteInProgress=false;autoLinkAttempted=true;clearAccessParam();await signOut(auth);notice("Не удалось открыть ссылку: "+friendlyError(e),true)}
+}
+async function enterApp(user){
+ currentUser=user;
+ if(!profile){const p=await get(ref(db,"users/"+user.uid));if(!p.exists())throw new Error("Для этой ссылки не назначена роль.");profile={uid:user.uid,...p.val()}}
+ if(profile.active===false){await signOut(auth);throw new Error("Доступ отключён.")}
+ $("authView").classList.add("hidden");$("appView").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");$("who").textContent=myName()+" · "+roleName(profile.role);
+ hideNotice(true);await loadData();showPage("dashboard");
+}
+$("firstOwnerBtn").onclick=firstOwnerSetup;
+$("logoutBtn").onclick=()=>signOut(auth);
+$("collectionForm").addEventListener("submit",handleCollection);
+$("transferForm").addEventListener("submit",handleTransfer);
+$("expenseForm").addEventListener("submit",handleExpense);
+$("userForm").addEventListener("submit",handleCreateUser);
+$("reportApply").onclick=renderReport;
+$("exportCsv").onclick=()=>{
+ const rows=[["Дата","Тип","Сумма","Автор","Статус","Описание"]];
+ [...entries(collections).map(x=>({...x,type:"Поступление"})),...entries(transfers).map(x=>({...x,type:"Передача"})),...entries(expenses).map(x=>({...x,type:"Расход"}))].filter(ownRecord).forEach(x=>rows.push([x.date,x.type,x.amount,fmtUser(x.createdBy||x.collectorUid),x.status||"approved",x.note||x.purpose||""]));
+ const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="kassa-report.csv";a.click();URL.revokeObjectURL(a.href)
+};
+setDefaults();
+onAuthStateChanged(auth,async user=>{
+ currentUser=user;
+ if(bootstrapInProgress)return;
+ if(!user){$("authView").classList.remove("hidden");$("appView").classList.add("hidden");$("logoutBtn").classList.add("hidden");$("who").textContent="";if(incomingAccessToken&&!autoLinkAttempted){autoLinkAttempted=true;try{await signInAnonymously(auth)}catch(e){clearAccessParam();notice("Не удалось открыть ссылку: включите анонимный вход Firebase.",true)}}return}
+ try{
+  const p=await get(ref(db,"users/"+user.uid));
+  if(!p.exists()){
+    if(incomingAccessToken){await claimAccessLink(user,incomingAccessToken);return}
+    if(inviteInProgress)return;
+    await signOut(auth);notice("Профиль не найден. Откройте персональную ссылку владельца или нажмите «Первый вход владельца» при первоначальном запуске.",true);return;
+  }
+  profile={uid:user.uid,...p.val()};await enterApp(user);
+ }catch(e){notice("Ошибка входа: "+friendlyError(e),true)}
+});
+</script>
+</body>
+</html>
