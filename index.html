@@ -163,8 +163,16 @@ function myName(){return profile?.name||currentUser?.email||"Пользоват�
 function roleName(role){return ({owner:"Владелец",responsible:"Главный ответственный",collector:"Сборщик"})[role]||role}
 function fmtDate(d){if(!d)return "—";return new Date(d+"T12:00:00").toLocaleDateString("ru-RU")}
 function entries(obj){return Object.entries(obj||{}).map(([key,val])=>({id:key,...val})).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""))}
-function allowedTabs(){let t=[["dashboard","Главная"],["collections","Поступления"],["transfers","Передачи"],["expenses","Расходы"]];if(canApprove())t.push(["approvals","Подтверждения"]);if(canSeeAll())t.push(["reports","Отчёты"]);if(isOwner())t.push(["users","Пользователи"]);t.push(["history","История"]);return t}
-function showPage(page){activePage=page;document.querySelectorAll("#appView section[id^='page-']").forEach(s=>s.classList.add("hidden"));$("page-"+page)?.classList.remove("hidden");renderPage();window.scrollTo({top:0,behavior:"smooth"})}
+function allowedTabs(){
+  // Сборщик видит только свои рабочие разделы. Общая история, отчёты,
+  // подтверждения и управление пользователями доступны только ответственным.
+  const t=[["dashboard","Главная"],["collections","Мои поступления"],["transfers","Передачи"],["expenses","Мои расходы"]];
+  if(canApprove())t.push(["approvals","Подтверждения"]);
+  if(canSeeAll())t.push(["reports","Отчёты"],["history","История"]);
+  if(isOwner())t.push(["users","Пользователи"]);
+  return t;
+}
+function showPage(page){const permitted=new Set(allowedTabs().map(([p])=>p));activePage=permitted.has(page)?page:"dashboard";document.querySelectorAll("#appView section[id^='page-']").forEach(s=>s.classList.add("hidden"));$("page-"+activePage)?.classList.remove("hidden");renderPage();window.scrollTo({top:0,behavior:"smooth"})}
 function buildTabs(){
  const all=allowedTabs();
  const labels={dashboard:["⌂","Главная"],collections:["＋","Поступления"],transfers:["⇄","Передачи"],expenses:["−","Расходы"],approvals:["✓","Подтверждения"],reports:["▥","Отчёты"],users:["♙","Пользователи"],history:["◷","История"]};
@@ -304,7 +312,21 @@ function renderReport(){
  const totalC=c.reduce((s,x)=>s+Number(x.amount||0),0),totalE=e.reduce((s,x)=>s+Number(x.amount||0),0);
  $("reportContent").innerHTML=`<div class="grid"><div class="card metric"><div class="label">Поступления</div><div class="value">${money(totalC)}</div></div><div class="card metric"><div class="label">Подтверждённые расходы</div><div class="value">${money(totalE)}</div></div><div class="card metric"><div class="label">Передачи (сумма записей)</div><div class="value">${money(tr.reduce((s,x)=>s+Number(x.amount||0),0))}</div></div><div class="card metric"><div class="label">Поступления минус расходы</div><div class="value">${money(totalC-totalE)}</div></div></div>`;
 }
-function renderPage(){if(!profile)return;buildTabs();renderDashboard();renderCollections();renderTransfers();renderExpenses();if(canApprove())renderApprovals();if(isOwner())renderUsers();renderHistory();renderReport();$("collectionForm").classList.remove("hidden");$("transferForm").classList.remove("hidden");$("expenseForm").classList.remove("hidden");}
+function renderPage(){
+ if(!profile)return;
+ // Не только скрываем пункты меню: не показываем недоступные разделы даже при прямом вызове.
+ const permitted=new Set(allowedTabs().map(([page])=>page));
+ if(!permitted.has(activePage))activePage="dashboard";
+ buildTabs();renderDashboard();renderCollections();renderTransfers();renderExpenses();
+ if(canApprove())renderApprovals();
+ if(isOwner())renderUsers();
+ if(canSeeAll()){renderHistory();renderReport();}
+ $("page-history").classList.toggle("hidden",!canSeeAll()||activePage!=="history");
+ $("page-reports").classList.toggle("hidden",!canSeeAll()||activePage!=="reports");
+ $("page-approvals").classList.toggle("hidden",!canApprove()||activePage!=="approvals");
+ $("page-users").classList.toggle("hidden",!isOwner()||activePage!=="users");
+ $("collectionForm").classList.remove("hidden");$("transferForm").classList.remove("hidden");$("expenseForm").classList.remove("hidden");
+}
 async function addAudit(action,details={}){
  const key=push(ref(db,"audit")).key;
  await set(ref(db,"audit/"+key),{action,details,actorUid:currentUser.uid,actorName:myName(),createdAt:stamp()});
