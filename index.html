@@ -17,8 +17,48 @@ header h1{margin:0;font-size:22px}header .sub{font-size:12px;opacity:.8}.wrap{ma
 button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;cursor:pointer;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e2e8f0;color:#172033}.danger{background:#b91c1c}.success{background:#15803d}.small{padding:6px 9px;font-size:13px}
 input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:var(--text)}label{font-size:13px;color:#334155;display:block;margin:9px 0 5px}textarea{min-height:70px;resize:vertical}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 3px 12px #0f172a08;margin-bottom:14px}.metric .label{color:var(--muted);font-size:13px}.metric .value{font-size:25px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{background:#e2e8f0;color:#334155}.tabs button.active{background:var(--navy);color:#fff}.hidden{display:none!important}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;color:var(--muted);white-space:nowrap}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;background:#e2e8f0}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}.notice{padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:14px;margin-bottom:14px}.error{background:#fef2f2;color:#991b1b}.success-note{background:#f0fdf4;color:#166534}.auth{max-width:430px;margin:7vh auto;padding:22px}.auth h2{margin-top:0}.actions{display:flex;gap:6px;flex-wrap:wrap}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.section-title h2{font-size:18px;margin:0 0 12px}.foot{font-size:12px;color:var(--muted);padding:18px 0}.pill{padding:4px 8px;border-radius:7px;background:#f1f5f9;font-size:12px}
-@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.wrap{padding:12px}.metric .value{font-size:21px}header{padding:13px 14px}body{padding-bottom:env(safe-area-inset-bottom)}button{min-height:44px}.tabs{position:sticky;top:58px;z-index:4;background:var(--bg);padding:8px 0}.tabs button{flex:1 1 auto}.card{border-radius:18px}}
-@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.metric .value{font-size:19px}th,td{padding:8px}}
+@media(max-width:850px){
+  :root{--bg:#f4f6fb;--line:#e5eaf2}
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+  header{padding:15px 18px;min-height:68px;box-shadow:0 3px 12px #0f172a12}
+  header h1{font-size:24px;letter-spacing:-.4px}
+  .wrap{width:100%;max-width:100%;padding:14px 14px 22px;margin:0}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .two{grid-template-columns:1fr;gap:0}
+  .metric.card{margin:0;min-width:0;padding:15px 14px;border-radius:18px;box-shadow:0 4px 14px #17255408}
+  .metric.primary-metric{grid-column:1/-1;background:linear-gradient(135deg,#172554,#233b78);color:#fff;border-color:#172554;padding:19px}
+  .metric.primary-metric .label{color:#dbeafe;min-height:0;font-size:13px}
+  .metric.primary-metric .value{font-size:clamp(27px,7vw,34px);margin-top:8px}
+  .metric .label{font-size:13px;line-height:1.35;min-height:35px}
+  .metric .value{font-size:clamp(18px,5vw,23px);line-height:1.2;letter-spacing:-.45px;overflow-wrap:anywhere}
+  .card{padding:17px;margin-bottom:12px;border-radius:18px;min-width:0}
+  .card h2{font-size:18px;line-height:1.3;margin:0 0 14px}
+  .section-title h2{margin-bottom:10px}
+  button{min-height:46px}
+  input,select,textarea{min-height:45px;font-size:16px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:20;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin:0;padding:7px 5px calc(7px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -5px 20px #1725540d}
+  .tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:52px;padding:5px 2px;border-radius:12px;background:transparent;color:#64748b;font-size:10px;line-height:1.1;font-weight:700;white-space:normal}
+  .tabs button .nav-icon{font-size:19px;line-height:1.1}
+  .tabs button.active{background:#eef2ff;color:var(--navy)}
+  .tabs .more-menu{position:absolute;bottom:calc(72px + env(safe-area-inset-bottom));right:8px;width:min(240px,calc(100vw - 24px));display:flex;flex-direction:column;gap:4px;padding:8px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 35px #0f172a24}
+  .tabs .more-menu button{display:flex;flex-direction:row;justify-content:flex-start;gap:10px;padding:10px 12px;min-height:44px;font-size:14px;text-align:left;background:#fff;color:var(--text)}
+  .tabs .more-menu button.active{background:#eef2ff;color:var(--navy)}
+  .table-wrap{max-width:100%;border-radius:10px}
+  table{min-width:560px}
+  .notice{line-height:1.45}
+  .foot{font-size:12px;line-height:1.5;padding:12px 2px}
+}
+@media(max-width:430px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .metric.card{padding:13px 12px}
+  .metric .label{font-size:12px;min-height:33px}
+  .metric .value{font-size:clamp(17px,4.8vw,21px)}
+  th,td{padding:8px}
+  .row{align-items:stretch}
+  .row .fit{flex:1 1 100%}
+  .row .fit button{width:100%}
+}
 </style>
 </head>
 <body>
@@ -124,8 +164,22 @@ function roleName(role){return ({owner:"Владелец",responsible:"Глав�
 function fmtDate(d){if(!d)return "—";return new Date(d+"T12:00:00").toLocaleDateString("ru-RU")}
 function entries(obj){return Object.entries(obj||{}).map(([key,val])=>({id:key,...val})).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""))}
 function allowedTabs(){let t=[["dashboard","Главная"],["collections","Поступления"],["transfers","Передачи"],["expenses","Расходы"]];if(canApprove())t.push(["approvals","Подтверждения"]);if(canSeeAll())t.push(["reports","Отчёты"]);if(isOwner())t.push(["users","Пользователи"]);t.push(["history","История"]);return t}
-function showPage(page){activePage=page;document.querySelectorAll("#appView section[id^='page-']").forEach(s=>s.classList.add("hidden"));$("page-"+page)?.classList.remove("hidden");document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));renderPage()}
-function buildTabs(){$("tabs").innerHTML=allowedTabs().map(([p,n])=>`<button data-page="${p}" class="${p===activePage?"active":""}">${n}</button>`).join("");$("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>showPage(b.dataset.page))}
+function showPage(page){activePage=page;document.querySelectorAll("#appView section[id^='page-']").forEach(s=>s.classList.add("hidden"));$("page-"+page)?.classList.remove("hidden");renderPage();window.scrollTo({top:0,behavior:"smooth"})}
+function buildTabs(){
+ const all=allowedTabs();
+ const labels={dashboard:["⌂","Главная"],collections:["＋","Поступления"],transfers:["⇄","Передачи"],expenses:["−","Расходы"],approvals:["✓","Подтверждения"],reports:["▥","Отчёты"],users:["♙","Пользователи"],history:["◷","История"]};
+ const primary=["dashboard","collections","transfers","expenses"].filter(p=>all.some(x=>x[0]===p));
+ const extra=all.filter(([p])=>!primary.includes(p));
+ const activeExtra=extra.some(([p])=>p===activePage);
+ const buttons=primary.map(p=>{const n=all.find(x=>x[0]===p)[1];return `<button type="button" data-page="${p}" class="${p===activePage?"active":""}"><span class="nav-icon">${labels[p][0]}</span><span>${n}</span></button>`}).join("");
+ const more=`<button type="button" data-more="true" aria-expanded="false" class="${activeExtra?"active":""}"><span class="nav-icon">☰</span><span>Ещё</span></button>`;
+ const menu=extra.length?`<div class="more-menu hidden" id="moreMenu">${extra.map(([p,n])=>`<button type="button" data-page="${p}" class="${p===activePage?"active":""}"><span class="nav-icon">${labels[p]?.[0]||"•"}</span><span>${n}</span></button>`).join("")}</div>`:"";
+ $("tabs").innerHTML=buttons+more+menu;
+ $("tabs").querySelectorAll("button[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+ const mb=$("tabs").querySelector("[data-more]");
+ if(mb)mb.onclick=()=>{const m=$("moreMenu");if(!m)return;m.classList.toggle("hidden");mb.setAttribute("aria-expanded",String(!m.classList.contains("hidden")))};
+ document.addEventListener("click",function closeMore(e){const t=$("tabs");if(t&&!t.contains(e.target)){const m=$("moreMenu");if(m)m.classList.add("hidden");const b=t.querySelector("[data-more]");if(b)b.setAttribute("aria-expanded","false")}} ,{once:true});
+}
 async function getObject(path){const s=await get(ref(db,path));return s.exists()?s.val():{}}
 async function loadData(){
   if(!currentUser||!profile)return;
@@ -179,7 +233,8 @@ function renderDashboard(){
   ]:[
     ["Мои сборы",money(collected)],["Передано ответственному",money(balanceFor(currentUser.uid).transferred)],["Мои подтверждённые расходы",money(spent)],["Мой расчётный остаток",money(cash)]
   ];
-  $("metrics").innerHTML=metrics.map(([l,v])=>`<div class="card metric"><div class="label">${esc(l)}</div><div class="value">${esc(v)}</div></div>`).join("");
+  if(all){const overall=metrics.findIndex(([l])=>l==="Общий остаток");if(overall>0){const primary=metrics.splice(overall,1)[0];metrics.unshift(primary)}}
+  $("metrics").innerHTML=metrics.map(([l,v],i)=>`<div class="card metric ${all&&i===0?"primary-metric":""}"><div class="label">${esc(l)}</div><div class="value">${esc(v)}</div></div>`).join("");
   const rec=[...entries(collections).map(x=>({...x,type:"Поступление"})),...entries(transfers).map(x=>({...x,type:"Передача"})),...entries(expenses).map(x=>({...x,type:"Расход"}))].filter(ownRecord).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
   $("recent").innerHTML=rec.length?table(["Дата","Операция","Сумма","Статус"],rec.map(x=>[fmtDate(x.date),x.type,money(x.amount),statusBadge(x.status||"approved")])):"<p class='muted'>Операций пока нет.</p>";
   if(all){
