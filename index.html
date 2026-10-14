@@ -59,6 +59,48 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;bord
   .row .fit{flex:1 1 100%}
   .row .fit button{width:100%}
 }
+
+/* Полированный мобильный интерфейс в стиле финансовых приложений */
+:root{--navy:#142b59;--blue:#1976d2;--bg:#f5f7fc;--green:#0eaa91;--red:#e64b68;--line:#e8edf5}
+body{letter-spacing:-.12px}
+header{padding:18px 22px;min-height:76px;background:linear-gradient(125deg,#172b59 0%,#1b3974 100%);box-shadow:0 5px 20px #12275218}
+header h1{font-size:25px;letter-spacing:-.7px}
+.card{border-radius:22px;border-color:#edf0f5;box-shadow:0 5px 22px #182d5110}
+.metric .label{font-size:14px;line-height:1.35}
+.metric .value{letter-spacing:-.65px}
+.metric.primary-metric{position:relative;overflow:hidden;min-height:146px;background:linear-gradient(130deg,#1676d2 0%,#2057b5 65%,#173f89 100%);border:0;box-shadow:0 10px 26px #1764c52b}
+.metric.primary-metric:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-62px;top:-92px;background:#ffffff0d;border:1px solid #ffffff12;pointer-events:none}
+.metric.primary-metric .label{font-size:12px;letter-spacing:1.1px;text-transform:uppercase;color:#dcecff}
+.metric.primary-metric .value{font-size:clamp(30px,8vw,38px);letter-spacing:-1px}
+.quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 18px}
+.quick-actions button{min-width:0;min-height:64px;display:flex;align-items:center;justify-content:center;gap:6px;flex-direction:column;padding:9px 5px;border-radius:16px;background:#fff;color:#243654;border:1px solid #e8edf5;box-shadow:0 3px 12px #182d5108;font-size:12px}
+.quick-actions .qa-icon{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:#e8f2ff;color:#1976d2;font-size:20px;line-height:1}
+.quick-actions button[data-page="collections"] .qa-icon{background:#e2faf3;color:#0eaa91}
+.quick-actions button[data-page="expenses"] .qa-icon{background:#ffedf0;color:#e64b68}
+#page-dashboard .two{margin-top:18px!important}
+#page-dashboard .two>.card{min-width:0}
+#page-dashboard .two>.card h2{font-size:18px}
+.badge{font-weight:650}
+@media(max-width:850px){
+ header{min-height:70px;padding:15px 18px}
+ .wrap{padding:15px 15px 25px}
+ .grid{gap:11px}
+ .metric.card{padding:15px 14px;border-radius:19px}
+ .metric.primary-metric{padding:21px 20px;min-height:150px}
+ .metric.primary-metric .label{min-height:0;font-size:12px}
+ .metric.primary-metric .value{font-size:clamp(30px,8vw,38px)}
+ .metric:nth-child(2) .value{color:#0eaa91}
+ .metric:nth-child(3) .value{color:#e64b68}
+ .metric.primary-metric .value{color:#fff}
+ .tabs{padding:7px 8px calc(8px + env(safe-area-inset-bottom));grid-template-columns:repeat(5,minmax(0,1fr));box-shadow:0 -8px 26px #17255412}
+ .tabs button{font-size:10px;letter-spacing:-.2px}
+ .tabs button .nav-icon{font-size:21px}
+ .tabs button.active{background:#eaf2ff;color:#1768c4}
+ .quick-actions{gap:8px;margin:13px 0 17px}
+ .quick-actions button{min-height:62px;font-size:11px}
+ .two{gap:0}
+}
+@media(max-width:370px){.metric .value{font-size:17px}.metric .label{font-size:11px}.quick-actions button{font-size:10px}}
 </style>
 </head>
 <body>
@@ -69,6 +111,7 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;bord
   <div class="tabs" id="tabs"></div>
   <section id="page-dashboard">
     <div class="grid" id="metrics"></div>
+    <div class="quick-actions" aria-label="Быстрые действия"><button type="button" data-page="collections"><span class="qa-icon">＋</span><span>Поступление</span></button><button type="button" data-page="transfers"><span class="qa-icon">⇄</span><span>Передать деньги</span></button><button type="button" data-page="expenses"><span class="qa-icon">−</span><span>Расход</span></button></div>
     <div class="two" style="margin-top:14px">
       <div class="card"><div class="section-title"><h2>Последние операции</h2></div><div id="recent"></div></div>
       <div class="card"><div class="section-title"><h2>Сверка денег</h2></div><div id="balances"></div><p class="muted" style="font-size:12px">Баланс по учёту не заменяет фактический пересчёт наличных. Сверку можно отмечать отдельно при проверке.</p></div>
@@ -179,7 +222,7 @@ function buildTabs(){
  const primary=["dashboard","collections","transfers","expenses"].filter(p=>all.some(x=>x[0]===p));
  const extra=all.filter(([p])=>!primary.includes(p));
  const activeExtra=extra.some(([p])=>p===activePage);
- const buttons=primary.map(p=>{const n=all.find(x=>x[0]===p)[1];return `<button type="button" data-page="${p}" class="${p===activePage?"active":""}"><span class="nav-icon">${labels[p][0]}</span><span>${n}</span></button>`}).join("");
+ const buttons=primary.map(p=>{const n=({dashboard:"Главная",collections:"Сборы",transfers:"Передать",expenses:"Расходы"})[p]||all.find(x=>x[0]===p)[1];return `<button type="button" data-page="${p}" class="${p===activePage?"active":""}"><span class="nav-icon">${labels[p][0]}</span><span>${n}</span></button>`}).join("");
  const more=`<button type="button" data-more="true" aria-expanded="false" class="${activeExtra?"active":""}"><span class="nav-icon">☰</span><span>Ещё</span></button>`;
  const menu=extra.length?`<div class="more-menu hidden" id="moreMenu">${extra.map(([p,n])=>`<button type="button" data-page="${p}" class="${p===activePage?"active":""}"><span class="nav-icon">${labels[p]?.[0]||"•"}</span><span>${n}</span></button>`).join("")}</div>`:"";
  $("tabs").innerHTML=buttons+more+menu;
@@ -314,6 +357,7 @@ function renderReport(){
 }
 function renderPage(){
  if(!profile)return;
+ document.querySelectorAll(".quick-actions [data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
  // Не только скрываем пункты меню: не показываем недоступные разделы даже при прямом вызове.
  const permitted=new Set(allowedTabs().map(([page])=>page));
  if(!permitted.has(activePage))activePage="dashboard";
