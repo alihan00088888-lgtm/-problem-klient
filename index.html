@@ -3,41 +3,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#102a43">
 <title>Касса</title>
 <style>
-:root{--bg:#f3f6fa;--card:#fff;--ink:#172b4d;--muted:#62748a;--line:#dfe7f0;--blue:#1769e0;--navy:#102a43;--green:#12805c;--red:#c43838;--amber:#a86400;--shadow:0 8px 26px #172b4d0d}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;font-weight:650}button.secondary{background:#e9eff7;color:var(--ink)}button.danger{background:#fff0f0;color:var(--red)}button:disabled{opacity:.55;cursor:not-allowed}input,select,textarea{width:100%;border:1px solid #ccd7e4;border-radius:10px;padding:10px 11px;background:white;color:var(--ink)}textarea{min-height:76px;resize:vertical}label{display:block;font-size:13px;color:var(--muted);font-weight:650;margin:0 0 5px}.field{margin-bottom:12px}.hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.topbar{background:var(--navy);color:white;padding:16px max(18px,calc((100% - 1200px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:22px;font-weight:800;letter-spacing:.2px}.userline{font-size:13px;color:#d9e5f3}.wrap{max-width:1200px;margin:0 auto;padding:22px 16px 60px}.login-wrap{max-width:420px;margin:8vh auto;padding:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}.card h2,.card h3{margin:0 0 14px}.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.stat-label{color:var(--muted);font-size:13px}.stat-value{font-size:clamp(21px,3vw,29px);font-weight:800;margin-top:4px;overflow-wrap:anywhere}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.nav button{background:#e4ebf4;color:var(--ink)}.nav button.active{background:var(--blue);color:white}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}td{font-size:14px}.badge{display:inline-block;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:750;background:#edf2f8}.badge.ok{background:#e4f6ed;color:#08734f}.badge.pending{background:#fff3d9;color:#925800}.badge.no{background:#ffebeb;color:#a32626}.notice{padding:12px 14px;border-radius:11px;background:#eef5ff;color:#174a89;margin:0 0 14px}.error{background:#fff0f0;color:#a32626}.success{background:#e8f7ee;color:#096943}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions button{padding:7px 10px;font-size:12px}.section-title{margin:8px 0 14px}.empty{padding:22px;text-align:center;color:var(--muted)}.right{text-align:right}.danger-text{color:var(--red)}.hr{border:0;border-top:1px solid var(--line);margin:16px 0}.foot{color:var(--muted);font-size:12px;margin-top:16px}.inline{display:flex;gap:8px;align-items:center}.inline input{flex:1}.login-card{padding:24px}.login-card h1{margin:0 0 5px}.hidden-file{display:none}
-@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:1fr 1fr}.wrap{padding:14px 10px 40px}.card{padding:14px}.topbar{padding:13px 14px}}
-@media(max-width:520px){.two,.three,.form-grid{grid-template-columns:1fr}.brand{font-size:20px}.userline{max-width:180px;text-align:right}}
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#17202a;background:#f4f6f8}
+*{box-sizing:border-box}body{margin:0}header{background:#132b3a;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:24px;margin:0}main{max-width:1180px;margin:20px auto;padding:0 14px}.muted{color:#647481;font-size:13px}.card{background:#fff;border:1px solid #e1e7eb;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #152c3b0a}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.metric{padding:14px;border-radius:10px;background:#f6f9fb}.metric b{display:block;font-size:23px;margin-top:5px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab,button{border:0;border-radius:9px;padding:10px 13px;background:#176b87;color:white;cursor:pointer;font:inherit}.tab{background:#e4edf1;color:#193c4a}.tab.active{background:#176b87;color:white}button.secondary{background:#e8eef1;color:#193c4a}button.danger{background:#a83434}button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{width:100%;padding:10px;border:1px solid #ccd6dc;border-radius:8px;font:inherit;background:white}label{display:block;font-size:13px;color:#41535d;margin:8px 0 5px}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}form .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px;border-bottom:1px solid #e7ecef;vertical-align:top}th{color:#536570;font-weight:600} .tablewrap{overflow-x:auto}.badge{padding:3px 7px;border-radius:20px;background:#fff0cc;color:#795300;font-size:12px}.ok{background:#d9f4e3;color:#176337}.hidden{display:none!important}.notice{padding:12px;border-radius:9px;background:#fff6db;color:#694d00;margin-bottom:12px}.error{background:#ffebeb;color:#8b2020}.success{background:#e3f8e9;color:#176337}.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.inline input{max-width:340px}.right{margin-left:auto}.small{font-size:12px}.empty{padding:20px;text-align:center;color:#71808a}
+@media(max-width:600px){header{padding:14px}main{margin:12px auto}.card{padding:12px}th,td{padding:8px}}
 </style>
 </head>
 <body>
-<div class="topbar"><div class="brand">Касса</div><div class="row"><div id="userLine" class="userline"></div><button id="signOutBtn" class="secondary hidden">Выйти</button></div></div>
-
-<div id="loginView" class="login-wrap">
-  <div class="card login-card">
-    <h1>Вход в кассу</h1><p class="muted">Войдите под своей учётной записью.</p>
-    <div id="loginMsg" class="notice hidden"></div>
-    <form id="loginForm">
-      <div class="field"><label for="loginEmail">Электронная почта</label><input id="loginEmail" type="email" autocomplete="username" required></div>
-      <div class="field"><label for="loginPassword">Пароль</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
-      <button type="submit" style="width:100%">Войти</button>
-    </form>
-    <p class="foot">Первого владельца нужно создать в Firebase Authentication и назначить роль owner в Firestore. Инструкция есть в README.</p>
-  </div>
+<header><div><h1>Касса</h1><div class="small" id="roleLabel">Подключение к Firebase…</div></div><button id="refreshBtn" class="secondary">Обновить</button></header>
+<main>
+<div id="status" class="notice">Подключаемся к Firebase…</div>
+<div id="setupCard" class="card hidden">
+<h2>Первичная настройка владельца</h2>
+<p>Приложение автоматически создало анонимную Firebase-сессию без пароля и регистрации. Для безопасной настройки вставьте UID ниже в Firebase Security Rules (инструкция в README), затем нажмите «Проверить доступ».</p>
+<label>Ваш Firebase UID</label><div class="inline"><input id="ownerUid" readonly><button id="copyUid" class="secondary">Копировать UID</button></div>
+<p class="muted">Пока UID владельца не внесён в правила Firestore, приложение не сможет сохранять данные. Это защищает кассу от захвата посторонним человеком, который первым откроет публичную ссылку.</p>
+<button id="checkRules">Проверить доступ</button>
 </div>
-
-<div id="appView" class="wrap hidden">
-  <div id="globalMsg" class="notice hidden"></div>
-  <div class="nav" id="nav"></div>
-  <main id="page"></main>
+<div id="appArea" class="hidden">
+<nav id="nav"></nav>
+<section id="dashboard" class="view">
+<div class="grid" id="metrics"></div>
+<div class="card"><h2>Последние операции</h2><div id="recent"></div></div>
+</section>
+<section id="collections" class="view hidden">
+<div class="card"><h2>Добавить поступление</h2><form id="collectionForm"><div class="formgrid">
+<div><label>Сумма (₽)</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
+<div><label>Дата</label><input name="date" type="date" required></div>
+<div><label>Описание (необязательно, без карточки участника)</label><input name="description" maxlength="200" placeholder="Например, сбор за день"></div>
+<div id="collectorField"><label>Сборщик</label><select name="collectorId" id="collectorSelect" required></select></div>
+</div><div class="actions"><button>Записать поступление</button></div></form></div>
+<div class="card"><h2>Поступления</h2><div id="collectionsTable"></div></div>
+</section>
+<section id="transfers" class="view hidden">
+<div class="card"><h2>Передать деньги ответственному</h2><form id="transferForm"><div class="formgrid">
+<div><label>Сумма (₽)</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
+<div><label>Дата передачи</label><input name="date" type="date" required></div>
+<div><label>Комментарий</label><input name="description" maxlength="200" placeholder="Например, наличные"></div>
+<div id="transferCollectorField"><label>Сборщик</label><select name="collectorId" id="transferCollectorSelect" required></select></div>
+</div><div class="actions"><button>Зарегистрировать передачу</button></div></form></div>
+<div class="card"><h2>Передачи</h2><div id="transfersTable"></div></div>
+</section>
+<section id="expenses" class="view hidden">
+<div class="card"><h2>Добавить расход</h2><form id="expenseForm"><div class="formgrid">
+<div><label>Сумма (₽)</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
+<div><label>Дата</label><input name="date" type="date" required></div>
+<div><label>Назначение</label><input name="description" maxlength="200" required placeholder="Материалы, работа строителей…"></div>
+<div><label>Кто оплатил</label><select name="payerId" id="payerSelect" required></select></div>
+<div><label>Чек / ссылка на фото (необязательно)</label><input name="receipt" maxlength="500" placeholder="Ссылка на файл"></div>
+</div><div class="actions"><button>Записать расход</button></div><p class="muted">Расход сборщика будет ожидать подтверждения главного ответственного. Расход владельца/ответственного фиксируется сразу.</p></form></div>
+<div class="card"><h2>Расходы</h2><div id="expensesTable"></div></div>
+</section>
+<section id="people" class="view hidden">
+<div class="card"><h2>Пользователи кассы</h2><p class="muted">Максимум: владелец, один главный ответственный и до четырёх сборщиков. Пользователь создаётся владельцем; после этого скопируйте ссылку-приглашение и отправьте человеку. Он откроет её на своём устройстве и активирует доступ. Не отправляйте приглашения посторонним.</p>
+<form id="userForm"><div class="formgrid"><div><label>Имя</label><input name="name" maxlength="80" required></div><div><label>Роль</label><select name="role"><option value="manager">Главный ответственный</option><option value="collector">Сборщик</option></select></div></div><div class="actions"><button>Создать приглашение</button></div></form><div id="inviteOutput" class="hidden notice"></div></div>
+<div class="card"><h2>Список пользователей</h2><div id="usersTable"></div></div>
+<div class="card"><h2>Активировать приглашение на этом устройстве</h2><p class="muted">Откройте приглашение на устройстве сборщика. Для входа используется анонимная Firebase-сессия без пароля. Доступ привязывается к UID этого устройства.</p><div class="inline"><input id="inviteCode" placeholder="Код приглашения"><button id="activateInvite">Активировать</button></div></div>
+</section>
+<section id="reports" class="view hidden"><div class="card"><h2>Сверка кассы</h2><div id="reportBody"></div></div><div class="card"><h2>История действий</h2><div id="auditTable"></div></div></section>
 </div>
-
+</main>
 <script type="module">
-import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, query, where, orderBy, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, query, where, orderBy, limit, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCcBRKtQpboKHKj8b8m2za18RxeVt3HYk0",
@@ -49,270 +84,161 @@ const firebaseConfig = {
   appId: "1:356139023031:web:cc33b8de8b03b6bfc8eb32",
   measurementId: "G-VQZ3JBF63V"
 };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const $ = id => document.getElementById(id);
-const rub = n => new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(Number(n||0));
-const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const today = () => new Date().toISOString().slice(0,10);
-const dateText = v => v ? esc(v) : '—';
-let currentUser=null, profile=null, users=[], collectionsData=[], transfersData=[], expensesData=[], activeTab='dashboard', busy=false;
-const roleName = r => ({owner:'Владелец',manager:'Главный ответственный',collector:'Сборщик'}[r]||r);
-const isOwner = () => profile?.role==='owner';
-const isManager = () => profile?.role==='manager';
-const isCollector = () => profile?.role==='collector';
-const canSeeAll = () => isOwner()||isManager();
-const personName = uid => users.find(u=>u.id===uid)?.name || (uid===currentUser?.uid ? profile?.name : 'Пользователь');
-const moneyInput = (id) => Number($(id)?.value || 0);
-function msg(text,kind='') { const el=$('globalMsg'); el.textContent=text; el.className='notice '+kind; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),6500); }
-function loginMsg(text,kind='') { const el=$('loginMsg'); el.textContent=text; el.className='notice '+kind; el.classList.remove('hidden'); }
-function setBusy(v){busy=v;document.querySelectorAll('button[type="submit"]').forEach(b=>b.disabled=v);}
-async function addAudit(action, details={}) {
-  try { await addDoc(collection(db,'auditLogs'),{action,details,actorId:currentUser.uid,actorName:profile?.name||currentUser.email,createdAt:serverTimestamp(),date:today()}); } catch(e) { console.warn('Audit log unavailable',e); }
+const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const rub=n=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(Number(n||0));
+let currentUser=null, profile=null, allUsers=[], allCollections=[], allTransfers=[], allExpenses=[], allAudit=[];
+const roles={owner:'Владелец',manager:'Главный ответственный',collector:'Сборщик'};
+const status=(msg,kind='')=>{$('status').textContent=msg;$('status').className='notice '+kind};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isOwner=()=>profile?.role==='owner', isManager=()=>profile?.role==='manager', isCollector=()=>profile?.role==='collector', canSeeAll=()=>isOwner()||isManager();
+const nameOf=id=>allUsers.find(u=>u.id===id)?.name||'Пользователь';
+function setDefaultDates(){document.querySelectorAll('input[type=date]').forEach(x=>{if(!x.value)x.value=today()})}
+function navSetup(){
+ const tabs=[['dashboard','Главная'],['collections','Поступления'],['transfers','Передачи'],['expenses','Расходы']];
+ if(isOwner()||isManager())tabs.push(['people','Пользователи'],['reports','Отчёты и сверка']);
+ $('nav').innerHTML=tabs.map(([id,t],i)=>`<button class="tab ${i===0?'active':''}" data-view="${id}">${t}</button>`).join('');
+ $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
 }
+function showView(id){document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');$('nav').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));}
+async function audit(action, details={}){await addDoc(collection(db,'audit'),{action,details,actorId:currentUser.uid,actorName:profile?.name||'Без имени',createdAt:serverTimestamp(),createdAtLocal:new Date().toISOString()})}
 async function loadData(){
-  if(canSeeAll()){
-    const [u,c,t,e]=await Promise.all([
-      getDocs(collection(db,'users')),
-      getDocs(collection(db,'collections')),
-      getDocs(collection(db,'transfers')),
-      getDocs(collection(db,'expenses'))
-    ]);
-    users=u.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.active!==false);
-    collectionsData=c.docs.map(d=>({id:d.id,...d.data()}));
-    transfersData=t.docs.map(d=>({id:d.id,...d.data()}));
-    expensesData=e.docs.map(d=>({id:d.id,...d.data()}));
-  } else {
-    // Firestore Rules are not filters: collector queries must explicitly be limited to their own records.
-    const [c,t,e]=await Promise.all([
-      getDocs(query(collection(db,'collections'),where('collectorId','==',currentUser.uid))),
-      getDocs(query(collection(db,'transfers'),where('collectorId','==',currentUser.uid))),
-      getDocs(query(collection(db,'expenses'),where('collectorId','==',currentUser.uid)))
-    ]);
-    users=[{id:currentUser.uid,...profile}];
-    collectionsData=c.docs.map(d=>({id:d.id,...d.data()}));
-    transfersData=t.docs.map(d=>({id:d.id,...d.data()}));
-    expensesData=e.docs.map(d=>({id:d.id,...d.data()}));
-  }
-}
-function fmtDate(d){return esc(d||'—')}
-function approvedExpenses(){return expensesData.filter(e=>e.status==='approved')}
-function confirmedTransfers(){return transfersData.filter(t=>t.status==='confirmed')}
-function ownCollections(){return collectionsData.filter(x=>x.collectorId===currentUser.uid)}
-function ownExpenses(){return expensesData.filter(x=>x.collectorId===currentUser.uid || x.paidBy===currentUser.uid)}
-function ownTransfers(){return transfersData.filter(x=>x.collectorId===currentUser.uid)}
-function collectorBalance(uid){
- const collected=collectionsData.filter(x=>x.collectorId===uid).reduce((s,x)=>s+Number(x.amount||0),0);
- const sent=confirmedTransfers().filter(x=>x.collectorId===uid).reduce((s,x)=>s+Number(x.amount||0),0);
- const spent=approvedExpenses().filter(x=>x.paidBy===uid && x.payerType==='collector').reduce((s,x)=>s+Number(x.amount||0),0);
- return collected-sent-spent;
-}
-function managerBalance(){
- const received=confirmedTransfers().reduce((s,x)=>s+Number(x.amount||0),0);
- const spent=approvedExpenses().filter(x=>x.payerType==='manager').reduce((s,x)=>s+Number(x.amount||0),0);
- return received-spent;
-}
-function totals(){
- const collected=collectionsData.reduce((s,x)=>s+Number(x.amount||0),0);
- const expenses=approvedExpenses().reduce((s,x)=>s+Number(x.amount||0),0);
- const pendingT=transfersData.filter(x=>x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0);
- const pendingE=expensesData.filter(x=>x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0);
- return {collected,expenses,balance:collected-expenses,pendingT,pendingE};
-}
-function dateSort(a,b){return String(b.date||'').localeCompare(String(a.date||''))}
-function navItems(){
- if(isOwner()) return [['dashboard','Главная'],['collections','Сборы'],['transfers','Передачи денег'],['expenses','Расходы'],['cash','Касса'],['users','Пользователи'],['reports','Отчёты'],['history','История']];
- if(isManager()) return [['dashboard','Главная'],['collections','Сборы'],['transfers','Передачи денег'],['expenses','Расходы'],['cash','Касса'],['users','Сборщики'],['reports','Отчёты'],['history','История']];
- return [['dashboard','Моя касса'],['collections','Мои сборы'],['transfers','Мои передачи'],['expenses','Мои расходы'],['reports','Мой отчёт']];
-}
-function renderNav(){
- $('nav').innerHTML=navItems().map(([k,n])=>`<button data-tab="${k}" class="${activeTab===k?'active':''}">${n}</button>`).join('');
- $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;renderNav();renderPage();});
-}
-function stat(label,value,sub=''){return `<div class="card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub?`<div class="small muted">${sub}</div>`:''}</div>`}
-function table(headers,rows){return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="empty">Операций пока нет</td></tr>`}</tbody></table></div>`}
-function opBadge(s){return s==='confirmed'||s==='approved' ? '<span class="badge ok">Подтверждено</span>' : s==='rejected' ? '<span class="badge no">Отклонено</span>' : '<span class="badge pending">Ожидает</span>'}
-function dashboard(){
- const t=totals();
- if(canSeeAll()){
-  const rows=[...users.filter(u=>u.role==='collector').map(u=>`<tr><td>${esc(u.name)}</td><td>${rub(collectionsData.filter(c=>c.collectorId===u.id).reduce((s,c)=>s+Number(c.amount||0),0))}</td><td>${rub(confirmedTransfers().filter(x=>x.collectorId===u.id).reduce((s,x)=>s+Number(x.amount||0),0))}</td><td>${rub(approvedExpenses().filter(x=>x.paidBy===u.id&&x.payerType==='collector').reduce((s,x)=>s+Number(x.amount||0),0))}</td><td><b>${rub(collectorBalance(u.id))}</b></td></tr>`)];
-  return `<h2 class="section-title">Общая касса</h2><div class="grid stats">${stat('Всего собрано',rub(t.collected))}${stat('Расходы подтверждены',rub(t.expenses))}${stat('Текущий остаток',rub(t.balance))}${stat('У главного ответственного',rub(managerBalance()))}</div>
-  <div class="grid two"><section class="card"><h3>Ожидают обработки</h3><p>Передачи денег: <b>${rub(t.pendingT)}</b></p><p>Расходы сборщиков: <b>${rub(t.pendingE)}</b></p><p class="muted small">Ожидающие операции не уменьшают баланс до подтверждения.</p></section><section class="card"><h3>Контроль кассы</h3><p>Сумма остатков сборщиков и ответственного: <b>${rub(users.filter(u=>u.role==='collector').reduce((s,u)=>s+collectorBalance(u.id),0)+managerBalance())}</b></p><p class="muted small">Передачи между людьми не считаются расходами и не меняют общий остаток.</p></section></div>
-  <section class="card"><h3>Остатки по сборщикам</h3>${table(['Сборщик','Собрано','Передано','Расходы','Остаток'],rows.join(''))}</section>
-  <section class="card"><h3>Последние операции</h3>${recentRows()}</section>`;
+ const [u,c,t,e,a]=await Promise.all([
+  getDocs(collection(db,'users')),getDocs(collection(db,'collections')),getDocs(collection(db,'transfers')),
+  getDocs(collection(db,'expenses')),getDocs(query(collection(db,'audit'),orderBy('createdAtLocal','desc'),limit(100)))
+ ]);
+ allUsers=u.docs.map(d=>({id:d.id,...d.data()}));allCollections=c.docs.map(d=>({id:d.id,...d.data()}));allTransfers=t.docs.map(d=>({id:d.id,...d.data()}));allExpenses=e.docs.map(d=>({id:d.id,...d.data()}));allAudit=a.docs.map(d=>({id:d.id,...d.data()}));
+ if(!canSeeAll()){
+  allCollections=allCollections.filter(x=>x.collectorId===currentUser.uid);
+  allTransfers=allTransfers.filter(x=>x.collectorId===currentUser.uid);
+  allExpenses=allExpenses.filter(x=>x.payerId===currentUser.uid||x.createdBy===currentUser.uid);
+  allAudit=allAudit.filter(x=>x.actorId===currentUser.uid);
  }
- const col=ownCollections().reduce((s,x)=>s+Number(x.amount||0),0);
- const sent=confirmedTransfers().filter(x=>x.collectorId===currentUser.uid).reduce((s,x)=>s+Number(x.amount||0),0);
- const spent=approvedExpenses().filter(x=>x.paidBy===currentUser.uid&&x.payerType==='collector').reduce((s,x)=>s+Number(x.amount||0),0);
- return `<h2 class="section-title">Моя касса</h2><div class="grid stats">${stat('Всего собрано',rub(col))}${stat('Передано ответственному',rub(sent))}${stat('Мои подтверждённые расходы',rub(spent))}${stat('Должно быть у меня',rub(collectorBalance(currentUser.uid)))}</div>
- <section class="card"><h3>Мои последние операции</h3>${recentRows()}</section>`;
+ render();status('Данные синхронизированы с Firebase.','success');
 }
-function recentRows(){
- const all=[
- ...collectionsData.map(x=>({date:x.date,type:'Сбор',who:personName(x.collectorId),amount:x.amount,note:x.note||'',status:'approved'})),
- ...transfersData.map(x=>({date:x.date,type:'Передача',who:personName(x.collectorId),amount:x.amount,note:x.note||'',status:x.status})),
- ...expensesData.map(x=>({date:x.date,type:'Расход',who:personName(x.paidBy),amount:x.amount,note:x.note||'',status:x.status}))
- ].filter(x=>canSeeAll()||x.who===profile?.name).sort(dateSort).slice(0,8);
- return table(['Дата','Тип','Кто','Сумма','Описание','Статус'],all.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.who)}</td><td>${rub(x.amount)}</td><td>${esc(x.note)}</td><td>${opBadge(x.status)}</td></tr>`).join(''));
-}
-function collectionsPage(){
- const list=canSeeAll()?collectionsData:ownCollections();
- const rows=[...list].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.collectorId))}</td><td><b>${rub(x.amount)}</b></td><td>${esc(x.note||'—')}</td><td>${esc(x.createdByName||'—')}</td></tr>`).join('');
- return `<h2 class="section-title">${canSeeAll()?'Сборы':'Мои сборы'}</h2><div class="grid two"><section class="card"><h3>Добавить поступление</h3><form id="collectionForm"><div class="field"><label>Сумма, ₽</label><input id="cAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>Дата получения</label><input id="cDate" type="date" value="${today()}" required></div>${canSeeAll()?`<div class="field"><label>Сборщик</label><select id="cCollector">${users.filter(u=>u.role==='collector').map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></div>`:''}<div class="field"><label>Описание / примечание (необязательно)</label><input id="cNote" maxlength="300" placeholder="Например, сбор за день"></div><button type="submit">Сохранить поступление</button></form></section><section class="card"><h3>Правило учёта</h3><p>Каждое поступление записывается отдельной строкой. Список участников не ведётся.</p><p class="muted small">Владелец и главный ответственный видят все поступления. Сборщик видит только свои.</p></section></div><section class="card"><h3>История поступлений</h3>${table(['Дата','Сборщик','Сумма','Примечание','Записал'],rows)}</section>`;
-}
-function transfersPage(){
- const list=canSeeAll()?transfersData:ownTransfers();
- const rows=[...list].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.collectorId))}</td><td><b>${rub(x.amount)}</b></td><td>${esc(x.note||'—')}</td><td>${opBadge(x.status)}</td><td>${canSeeAll()&&x.status==='pending'?`<div class="actions"><button data-action="confirm-transfer" data-id="${x.id}">Подтвердить получение</button><button class="danger" data-action="reject-transfer" data-id="${x.id}">Отклонить</button></div>`:''}</td></tr>`).join('');
- return `<h2 class="section-title">${canSeeAll()?'Передачи денег':'Мои передачи денег'}</h2><div class="grid two"><section class="card"><h3>Зарегистрировать передачу</h3><form id="transferForm"><div class="field"><label>Сумма, ₽</label><input id="tAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>Дата передачи</label><input id="tDate" type="date" value="${today()}" required></div>${canSeeAll()?`<div class="field"><label>Сборщик, который передал деньги</label><select id="tCollector">${users.filter(u=>u.role==='collector').map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></div>`:''}<div class="field"><label>Примечание</label><input id="tNote" maxlength="300" placeholder="Например, наличные за неделю"></div><button type="submit">Отправить на подтверждение</button></form></section><section class="card"><h3>Как это работает</h3><p>Передача становится завершённой только после подтверждения получения ответственным.</p><p class="muted small">До подтверждения сумма остаётся в балансе сборщика и показывается как ожидающая.</p></section></div><section class="card"><h3>История передач</h3>${table(['Дата','Сборщик','Сумма','Примечание','Статус','Действие'],rows)}</section>`;
-}
-function expensesPage(){
- const list=canSeeAll()?expensesData:ownExpenses();
- const rows=[...list].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.paidBy))}</td><td>${esc(x.payerType==='manager'?'Касса ответственного':'Касса сборщика')}</td><td><b>${rub(x.amount)}</b></td><td>${esc(x.category||'—')}</td><td>${esc(x.note||'—')}</td><td>${opBadge(x.status)}</td><td>${canSeeAll()&&x.status==='pending'?`<div class="actions"><button data-action="approve-expense" data-id="${x.id}">Подтвердить</button><button class="danger" data-action="reject-expense" data-id="${x.id}">Отклонить</button></div>`:''}</td></tr>`).join('');
- const payerOptions=canSeeAll()?`<option value="manager">Касса ответственного</option>${users.filter(u=>u.role==='collector').map(u=>`<option value="${u.id}">Касса: ${esc(u.name)}</option>`).join('')}`:`<option value="${currentUser.uid}">Моя касса</option>`;
- return `<h2 class="section-title">Расходы на строительство</h2><div class="grid two"><section class="card"><h3>Добавить расход</h3><form id="expenseForm"><div class="field"><label>Сумма, ₽</label><input id="eAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>Дата оплаты</label><input id="eDate" type="date" value="${today()}" required></div><div class="field"><label>Категория</label><select id="eCategory" required><option value="">Выберите</option><option>Стройматериалы</option><option>Работа строителей</option><option>Доставка</option><option>Инструменты</option><option>Проект / документы</option><option>Прочее</option></select></div>${canSeeAll()?`<div class="field"><label>Из чьей кассы оплачено</label><select id="ePayer">${payerOptions}</select></div>`:''}<div class="field"><label>Описание расхода</label><textarea id="eNote" maxlength="1000" required placeholder="Что купили или за что заплатили"></textarea></div><div class="field"><label>Ссылка на чек (необязательно)</label><input id="eReceipt" type="url" placeholder="https://..."></div><button type="submit">Сохранить расход</button></form></section><section class="card"><h3>Подтверждение</h3><p>Расход сборщика появляется как ожидающий и уменьшает его остаток только после подтверждения ответственным.</p><p>Расход из кассы ответственного фиксируется как подтверждённый сразу.</p><p class="muted small">Запись о расходе не заменяет предварительное разрешение: сборщик должен согласовать покупку с ответственным отдельно.</p></section></div><section class="card"><h3>История расходов</h3>${table(['Дата','Кто оплатил','Откуда деньги','Сумма','Категория','Описание','Статус','Действие'],rows)}</section>`;
-}
-function cashPage(){
- const t=totals();
- const collectorRows=users.filter(u=>u.role==='collector').map(u=>`<tr><td>${esc(u.name)}</td><td>${rub(collectorBalance(u.id))}</td><td>${rub(transfersData.filter(x=>x.collectorId===u.id&&x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0))}</td></tr>`).join('');
- return `<h2 class="section-title">Касса и остатки</h2><div class="grid stats">${stat('Собрано за всё время',rub(t.collected))}${stat('Подтверждённые расходы',rub(t.expenses))}${stat('Общий текущий остаток',rub(t.balance))}${stat('У ответственного',rub(managerBalance()))}</div><section class="card"><h3>Остатки сборщиков</h3>${table(['Сборщик','Остаток по учёту','Передачи на подтверждении'],collectorRows)}</section><section class="card"><h3>Сверка</h3><p>Общий остаток = все зарегистрированные сборы − подтверждённые расходы.</p><p>Сумма остатков у сборщиков и ответственного: <b>${rub(users.filter(u=>u.role==='collector').reduce((s,u)=>s+collectorBalance(u.id),0)+managerBalance())}</b></p><p class="muted small">Это расчётный остаток. Фактическую наличность нужно периодически сверять вручную и фиксировать расхождения отдельной корректировкой.</p></section>`;
-}
-function usersPage(){
- const rows=users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email||'—')}</td><td>${esc(roleName(u.role))}</td><td>${u.active===false?'<span class="badge no">Отключён</span>':'<span class="badge ok">Активен</span>'}</td><td>${u.id===currentUser.uid?'<span class="muted small">Текущий аккаунт</span>':`<div class="actions"><button class="secondary" data-action="toggle-user" data-id="${u.id}" data-active="${u.active===false?'false':'true'}">${u.active===false?'Включить':'Отключить'}</button><button class="secondary" data-action="copy-link">Копировать ссылку входа</button></div>`}</td></tr>`).join('');
- return `<h2 class="section-title">${isOwner()?'Управление доступом':'Сборщики'}</h2>${isOwner()?`<section class="card"><h3>Создать пользователя</h3><form id="userForm"><div class="form-grid"><div class="field"><label>Имя</label><input id="uName" required maxlength="100"></div><div class="field"><label>Электронная почта для входа</label><input id="uEmail" type="email" required></div><div class="field"><label>Роль</label><select id="uRole"><option value="collector">Сборщик</option><option value="manager">Главный ответственный</option></select></div><div class="field"><label>Начальный пароль (не менее 6 символов)</label><input id="uPassword" type="password" minlength="6" required autocomplete="new-password"></div></div><button type="submit">Создать доступ</button><p class="foot">Создание учётной записи не должно разлогинить владельца: для этого используется отдельный экземпляр Firebase Auth. После создания передайте пользователю адрес сайта, email и пароль безопасным способом.</p></form></section>`:''}<section class="card"><h3>Пользователи</h3>${table(['Имя','Email','Роль','Статус','Действия'],rows)}</section><section class="card"><h3>Ссылка для входа</h3><div class="inline"><input id="appLink" readonly value="${esc(location.href.split('#')[0])}"><button data-action="copy-link">Копировать</button></div><p class="muted small">У всех одна ссылка на сайт, но каждый входит под своей учётной записью и видит только разрешённые данные.</p></section>`;
-}
-function reportsPage(){
- const from = $('reportFrom')?.value || '';
- const to = $('reportTo')?.value || '';
- const inRange = x => (!from||String(x.date||'')>=from)&&(!to||String(x.date||'')<=to);
- const cl=collectionsData.filter(x=>inRange(x)&& (canSeeAll()||x.collectorId===currentUser.uid));
- const ex=expensesData.filter(x=>inRange(x)&& (canSeeAll()||x.paidBy===currentUser.uid||x.collectorId===currentUser.uid));
- const tr=transfersData.filter(x=>inRange(x)&& (canSeeAll()||x.collectorId===currentUser.uid));
- const sum=a=>a.reduce((s,x)=>s+Number(x.amount||0),0);
- return `<h2 class="section-title">${canSeeAll()?'Отчёты':'Мой отчёт'}</h2><section class="card"><h3>Период</h3><div class="form-grid"><div class="field"><label>С даты</label><input id="reportFrom" type="date" value="${esc(from)}"></div><div class="field"><label>По дату</label><input id="reportTo" type="date" value="${esc(to)}"></div></div><button id="applyReport">Применить период</button> <button id="clearReport" class="secondary">За всё время</button></section><div class="grid stats">${stat('Сборы за период',rub(sum(cl)))}${stat('Подтверждённые расходы',rub(sum(ex.filter(x=>x.status==='approved'))))}${stat('Передачи подтверждены',rub(sum(tr.filter(x=>x.status==='confirmed'))))}${stat('Ожидают подтверждения',rub(sum(ex.filter(x=>x.status==='pending'))+sum(tr.filter(x=>x.status==='pending'))))}</div><section class="card"><h3>Поступления</h3>${table(['Дата','Сборщик','Сумма','Описание'],[...cl].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.collectorId))}</td><td>${rub(x.amount)}</td><td>${esc(x.note||'—')}</td></tr>`).join(''))}</section><section class="card"><h3>Расходы</h3>${table(['Дата','Кто оплатил','Сумма','Описание','Статус'],[...ex].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.paidBy))}</td><td>${rub(x.amount)}</td><td>${esc(x.note||'—')}</td><td>${opBadge(x.status)}</td></tr>`).join(''))}</section>`;
-}
-function historyPage(){
- const rows=[
- ...collectionsData.map(x=>({date:x.date,createdAt:x.createdAt,kind:'Поступление',person:personName(x.collectorId),amount:x.amount,note:x.note||'',status:'approved',by:x.createdByName||'—'})),
- ...transfersData.map(x=>({date:x.date,createdAt:x.createdAt,kind:'Передача',person:personName(x.collectorId),amount:x.amount,note:x.note||'',status:x.status,by:x.createdByName||'—'})),
- ...expensesData.map(x=>({date:x.date,createdAt:x.createdAt,kind:'Расход',person:personName(x.paidBy),amount:x.amount,note:x.note||'',status:x.status,by:x.createdByName||'—'}))
- ].sort(dateSort);
- return `<h2 class="section-title">История операций</h2><section class="card"><p class="muted small">История поступлений, передач и расходов. Подтверждённые операции не удаляются через интерфейс.</p>${table(['Дата','Операция','Касса / человек','Сумма','Описание','Статус','Записал'],rows.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.kind)}</td><td>${esc(x.person)}</td><td>${rub(x.amount)}</td><td>${esc(x.note)}</td><td>${opBadge(x.status)}</td><td>${esc(x.by)}</td></tr>`).join(''))}</section>`;
-}
-function renderPage(){
- if(!profile)return;
- const allowed=navItems().some(x=>x[0]===activeTab);
- if(!allowed)activeTab='dashboard';
- const renderers={dashboard,collections:collectionsPage,transfers:transfersPage,expenses:expensesPage,cash:cashPage,users:usersPage,reports:reportsPage,history:historyPage};
- $('page').innerHTML=(renderers[activeTab]||dashboard)();
- bindPageActions();
-}
-function requireAmount(v){if(!Number.isFinite(v)||v<=0)throw new Error('Укажите сумму больше нуля.');}
-async function handleCollection(e){
- e.preventDefault(); const amount=moneyInput('cAmount');requireAmount(amount);
- const collectorId=canSeeAll()?($('cCollector')?.value||''):currentUser.uid;
- if(!collectorId)throw new Error('Сначала создайте сборщика.');
- await addDoc(collection(db,'collections'),{amount,date:$('cDate').value,collectorId,note:$('cNote').value.trim(),createdBy:currentUser.uid,createdByName:profile.name,createdAt:serverTimestamp()});
- await addAudit('collection_created',{amount,collectorId,date:$('cDate').value});msg('Поступление сохранено.','success');await refresh();
-}
-async function handleTransfer(e){
- e.preventDefault();const amount=moneyInput('tAmount');requireAmount(amount);
- const collectorId=canSeeAll()?($('tCollector')?.value||''):currentUser.uid;
- if(!collectorId)throw new Error('Не выбран сборщик.');
- if(isCollector() && amount>collectorBalance(currentUser.uid))throw new Error('Сумма передачи превышает расчётный остаток у вас.');
- await addDoc(collection(db,'transfers'),{amount,date:$('tDate').value,collectorId,note:$('tNote').value.trim(),status:'pending',createdBy:currentUser.uid,createdByName:profile.name,createdAt:serverTimestamp()});
- await addAudit('transfer_created',{amount,collectorId,date:$('tDate').value});msg('Передача записана и ожидает подтверждения.','success');await refresh();
-}
-async function handleExpense(e){
- e.preventDefault();const amount=moneyInput('eAmount');requireAmount(amount);
- let payerType='collector',paidBy=currentUser.uid,collectorId=currentUser.uid,status='pending';
- if(canSeeAll()){
-  const payer=$('ePayer').value;
-  if(payer==='manager'){payerType='manager';paidBy=currentUser.uid;collectorId=null;status='approved';}
-  else {payerType='collector';paidBy=payer;collectorId=payer;status='pending';}
+function table(rows,cols,empty='Операций пока нет'){if(!rows.length)return `<div class="empty">${empty}</div>`;return `<div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th>${c.label}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${c.render?c.render(r):esc(r[c.key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+const amountCol={label:'Сумма',render:r=>rub(r.amount)},dateCol={label:'Дата',key:'date'},descCol={label:'Описание',render:r=>esc(r.description||'—')};
+function render(){
+ $('roleLabel').textContent=`${roles[profile.role]} · ${profile.name||'Без имени'}`;
+ navSetup();
+ const collectionsVisible=canSeeAll()?allCollections:allCollections.filter(x=>x.collectorId===currentUser.uid);
+ const transfersVisible=canSeeAll()?allTransfers:allTransfers.filter(x=>x.collectorId===currentUser.uid);
+ const expensesVisible=canSeeAll()?allExpenses:allExpenses.filter(x=>x.payerId===currentUser.uid||x.createdBy===currentUser.uid);
+ const totalCollected=collectionsVisible.reduce((s,x)=>s+Number(x.amount||0),0);
+ const totalSpent=expensesVisible.filter(x=>x.status==='approved').reduce((s,x)=>s+Number(x.amount||0),0);
+ const totalTransferred=transfersVisible.filter(x=>x.status==='confirmed').reduce((s,x)=>s+Number(x.amount||0),0);
+ const cashHeld=totalCollected-totalTransferred-expensesVisible.filter(x=>x.status==='approved'&&x.payerRole==='collector').reduce((s,x)=>s+Number(x.amount||0),0);
+ const managerCash=canSeeAll()?totalTransferred-expensesVisible.filter(x=>x.status==='approved'&&x.payerRole!=='collector').reduce((s,x)=>s+Number(x.amount||0),0):null;
+ const totalCash=canSeeAll()?totalCollected-totalSpent:null;
+ const metrics=[['Всего собрано',rub(totalCollected)],['Расходы (подтверждены)',rub(totalSpent)],['Передано ответственному',rub(totalTransferred)],['Остаток у сборщика',canSeeAll()?'—':rub(cashHeld)]];
+ if(canSeeAll())metrics.push(['У ответственного (расчётно)',rub(managerCash)],['Общий остаток',rub(totalCash)]);
+ $('metrics').innerHTML=metrics.map(([a,b])=>`<div class="metric"><span>${a}</span><b>${b}</b></div>`).join('');
+ const recent=[...collectionsVisible.map(x=>({...x,type:'Поступление'})),...transfersVisible.map(x=>({...x,type:'Передача'})),...expensesVisible.map(x=>({...x,type:'Расход'}))].sort((a,b)=>(b.createdAtLocal||b.date||'').localeCompare(a.createdAtLocal||a.date||'')).slice(0,10);
+ $('recent').innerHTML=table(recent,[{label:'Операция',key:'type'},dateCol,amountCol,{label:'Описание',render:r=>esc(r.description||r.type)},{label:'Статус',render:r=>`<span class="badge ${r.status==='approved'||r.status==='confirmed'?'ok':''}">${esc(r.status||'Записано')}</span>`}]);
+ $('collectionsTable').innerHTML=table([...collectionsVisible].sort((a,b)=>b.date.localeCompare(a.date)),[dateCol,amountCol,descCol,{label:'Сборщик',render:r=>esc(nameOf(r.collectorId))}]);
+ $('transfersTable').innerHTML=table([...transfersVisible].sort((a,b)=>b.date.localeCompare(a.date)),[dateCol,amountCol,{label:'Сборщик',render:r=>esc(nameOf(r.collectorId))},descCol,{label:'Статус',render:r=>`<span class="badge ${r.status==='confirmed'?'ok':''}">${r.status==='confirmed'?'Подтверждено':'Ожидает подтверждения'}</span>`},{label:'Действие',render:r=>canSeeAll()&&r.status!=='confirmed'?`<button data-confirm-transfer="${r.id}">Подтвердить</button>`:'—'}]);
+ $('expensesTable').innerHTML=table([...expensesVisible].sort((a,b)=>b.date.localeCompare(a.date)),[dateCol,amountCol,descCol,{label:'Оплатил',render:r=>esc(nameOf(r.payerId))},{label:'Статус',render:r=>`<span class="badge ${r.status==='approved'?'ok':''}">${r.status==='approved'?'Подтверждён':'Ожидает подтверждения'}</span>`},{label:'Действие',render:r=>canSeeAll()&&r.status!=='approved'?`<button data-confirm-expense="${r.id}">Подтвердить</button>`:'—'}]);
+ const collectorUsers=allUsers.filter(u=>u.role==='collector');
+ const options=collectorUsers.map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
+ $('collectorSelect').innerHTML=isCollector()?`<option value="${esc(currentUser.uid)}">${esc(profile.name)}</option>`:options;
+ $('transferCollectorSelect').innerHTML=isCollector()?`<option value="${esc(currentUser.uid)}">${esc(profile.name)}</option>`:options;
+ $('payerSelect').innerHTML=(canSeeAll()?allUsers.filter(u=>u.role!=='owner'):allUsers.filter(u=>u.id===currentUser.uid)).map(u=>`<option value="${esc(u.id)}">${esc(u.name)} (${roles[u.role]})</option>`).join('');
+ $('collectorField').classList.toggle('hidden',isCollector());$('transferCollectorField').classList.toggle('hidden',isCollector());
+ $('userForm').classList.toggle('hidden',!isOwner());
+ if(isOwner()||isManager()){
+  $('usersTable').innerHTML=table(allUsers,[{label:'Имя',key:'name'},{label:'Роль',render:u=>roles[u.role]||u.role},{label:'UID',render:u=>`<span class="small">${esc(u.id)}</span>`}]);
+  $('reportBody').innerHTML=`<div class="grid"><div class="metric">Всего собрано<b>${rub(allCollections.reduce((s,x)=>s+Number(x.amount||0),0))}</b></div><div class="metric">Расходы подтверждены<b>${rub(allExpenses.filter(x=>x.status==='approved').reduce((s,x)=>s+Number(x.amount||0),0))}</b></div><div class="metric">Передачи подтверждены<b>${rub(allTransfers.filter(x=>x.status==='confirmed').reduce((s,x)=>s+Number(x.amount||0),0))}</b></div><div class="metric">Общий остаток<b>${rub(allCollections.reduce((s,x)=>s+Number(x.amount||0),0)-allExpenses.filter(x=>x.status==='approved').reduce((s,x)=>s+Number(x.amount||0),0))}</b></div></div><h3>Сверка по сборщикам</h3>${table(collectorUsers.map(u=>{const collected=allCollections.filter(x=>x.collectorId===u.id).reduce((s,x)=>s+Number(x.amount||0),0);const transferred=allTransfers.filter(x=>x.collectorId===u.id&&x.status==='confirmed').reduce((s,x)=>s+Number(x.amount||0),0);const spent=allExpenses.filter(x=>x.payerId===u.id&&x.status==='approved').reduce((s,x)=>s+Number(x.amount||0),0);return {name:u.name,collected,transferred,spent,balance:collected-transferred-spent}}),[{label:'Сборщик',key:'name'},{label:'Собрано',render:r=>rub(r.collected)},{label:'Передано',render:r=>rub(r.transferred)},{label:'Расходы',render:r=>rub(r.spent)},{label:'Расчётный остаток',render:r=>rub(r.balance)}])}`;
+  $('auditTable').innerHTML=table(allAudit,[{label:'Время',render:r=>esc(r.createdAtLocal||'—')},{label:'Кто',key:'actorName'},{label:'Действие',key:'action'},{label:'Детали',render:r=>esc(JSON.stringify(r.details||{}))}]);
  }
- if(isCollector()&&amount>collectorBalance(currentUser.uid))throw new Error('Расход превышает расчётный остаток у вас.');
- const receipt=$('eReceipt').value.trim();
- if(receipt && !/^https?:\/\//i.test(receipt))throw new Error('Ссылка на чек должна начинаться с https:// или http://');
- await addDoc(collection(db,'expenses'),{amount,date:$('eDate').value,category:$('eCategory').value,note:$('eNote').value.trim(),receiptUrl:receipt,payerType,paidBy,collectorId,status,createdBy:currentUser.uid,createdByName:profile.name,createdAt:serverTimestamp()});
- await addAudit('expense_created',{amount,payerType,paidBy,date:$('eDate').value,status});msg(status==='approved'?'Расход сохранён.':'Расход отправлен на подтверждение.','success');await refresh();
+ document.querySelectorAll('[data-confirm-transfer]').forEach(b=>b.onclick=()=>confirmTransfer(b.dataset.confirmTransfer));
+ document.querySelectorAll('[data-confirm-expense]').forEach(b=>b.onclick=()=>confirmExpense(b.dataset.confirmExpense));
 }
-async function action(id,kind,button){
- button.disabled=true;
+async function createOperation(form,kind){
+ const fd=new FormData(form), amount=Number(fd.get('amount')), date=String(fd.get('date')||''), description=String(fd.get('description')||'').trim();
+ if(!Number.isFinite(amount)||amount<=0)throw new Error('Укажите сумму больше нуля.');
+ if(!date)throw new Error('Укажите дату.');
+ const data={amount,date,description,createdBy:currentUser.uid,createdAt:serverTimestamp(),createdAtLocal:new Date().toISOString()};
+ if(kind==='collection'){
+  data.collectorId=isCollector()?currentUser.uid:String(fd.get('collectorId')||'');
+  if(!data.collectorId)throw new Error('Выберите сборщика.');
+  await addDoc(collection(db,'collections'),data);await audit('Добавлено поступление',{amount,date,collectorId:data.collectorId});
+ }
+ if(kind==='transfer'){
+  data.collectorId=isCollector()?currentUser.uid:String(fd.get('collectorId')||'');data.status='pending';data.confirmedBy=null;
+  if(!data.collectorId)throw new Error('Выберите сборщика.');
+  await addDoc(collection(db,'transfers'),data);await audit('Зарегистрирована передача',{amount,date,collectorId:data.collectorId});
+ }
+ if(kind==='expense'){
+  data.payerId=String(fd.get('payerId')||currentUser.uid);data.payerRole=allUsers.find(u=>u.id===data.payerId)?.role||profile.role;data.receipt=String(fd.get('receipt')||'').trim();
+  data.status=(isOwner()||isManager())?'approved':'pending';
+  if(isCollector()&&data.payerId!==currentUser.uid)throw new Error('Сборщик может записывать расходы только от своего имени.');
+  await addDoc(collection(db,'expenses'),data);await audit('Добавлен расход',{amount,date,description,status:data.status});
+ }
+ form.reset();setDefaultDates();await loadData();
+}
+async function confirmTransfer(id){
+ if(!canSeeAll())return;const r=allTransfers.find(x=>x.id===id);if(!r)return;
+ if(!confirm(`Подтвердить получение ${rub(r.amount)} от ${nameOf(r.collectorId)}?`))return;
+ await updateDoc(doc(db,'transfers',id),{status:'confirmed',confirmedBy:currentUser.uid,confirmedAt:serverTimestamp(),confirmedAtLocal:new Date().toISOString()});await audit('Подтверждена передача',{id,amount:r.amount});await loadData();
+}
+async function confirmExpense(id){
+ if(!canSeeAll())return;const r=allExpenses.find(x=>x.id===id);if(!r)return;
+ if(!confirm(`Подтвердить расход ${rub(r.amount)}: ${r.description}?`))return;
+ await updateDoc(doc(db,'expenses',id),{status:'approved',approvedBy:currentUser.uid,approvedAt:serverTimestamp(),approvedAtLocal:new Date().toISOString()});await audit('Подтверждён расход',{id,amount:r.amount});await loadData();
+}
+async function createInvite(form){
+ if(!isOwner())throw new Error('Создавать пользователей может только владелец.');
+ const fd=new FormData(form),name=String(fd.get('name')||'').trim(),role=String(fd.get('role'));
+ if(!name)throw new Error('Введите имя.');
+ const counts=allUsers.reduce((o,u)=>(o[u.role]=(o[u.role]||0)+1,o),{});
+ if(role==='manager'&&counts.manager>=1)throw new Error('Главный ответственный уже создан.');
+ if(role==='collector'&&counts.collector>=4)throw new Error('Максимум четыре сборщика.');
+ const code=crypto.randomUUID().replaceAll('-','');
+ await setDoc(doc(db,'invites',code),{name,role,createdBy:currentUser.uid,createdAt:serverTimestamp(),used:false});
+ $('inviteOutput').classList.remove('hidden');$('inviteOutput').innerHTML=`Приглашение для <b>${esc(name)}</b> (${roles[role]}) создано.<br>Код: <code>${esc(code)}</code><br>Ссылка: <code>${esc(location.origin+location.pathname+'?invite='+code)}</code><br><span class="small">Отправьте ссылку только нужному человеку. Приглашение одноразовое.</span>`;
+ await audit('Создано приглашение',{name,role});form.reset();await loadData();
+}
+async function activateInvite(){
+ const code=$('inviteCode').value.trim()||new URLSearchParams(location.search).get('invite');
+ if(!code)throw new Error('Введите код приглашения.');
+ const inviteRef=doc(db,'invites',code);
+ await runTransaction(db,async tx=>{
+  const inv=await tx.get(inviteRef);
+  if(!inv.exists()||inv.data().used)throw new Error('Приглашение не найдено или уже использовано.');
+  const data=inv.data();
+  tx.set(doc(db,'users',currentUser.uid),{name:data.name,role:data.role,createdAt:serverTimestamp(),invitedBy:data.createdBy,inviteCode:code});
+  tx.update(inviteRef,{used:true,usedBy:currentUser.uid,usedAt:serverTimestamp()});
+ });
+ profile=(await getDoc(doc(db,'users',currentUser.uid))).data();$('setupCard').classList.add('hidden');$('appArea').classList.remove('hidden');await loadData();
+}
+async function init(){
  try{
-  if(kind==='confirm-transfer'||kind==='reject-transfer'){
-   if(!canSeeAll())throw new Error('Недостаточно прав.');
-   const ref=doc(db,'transfers',id),snap=await getDoc(ref);if(!snap.exists())throw new Error('Передача не найдена.');
-   if(snap.data().status!=='pending')throw new Error('Эта передача уже обработана.');
-   await updateDoc(ref,{status:kind==='confirm-transfer'?'confirmed':'rejected',reviewedBy:currentUser.uid,reviewedByName:profile.name,reviewedAt:serverTimestamp()});
-   await addAudit(kind,{id,amount:snap.data().amount});
-   msg(kind==='confirm-transfer'?'Получение денег подтверждено.':'Передача отклонена.','success');
-  } else if(kind==='approve-expense'||kind==='reject-expense'){
-   if(!canSeeAll())throw new Error('Недостаточно прав.');
-   const ref=doc(db,'expenses',id),snap=await getDoc(ref);if(!snap.exists())throw new Error('Расход не найден.');
-   if(snap.data().status!=='pending')throw new Error('Этот расход уже обработан.');
-   await updateDoc(ref,{status:kind==='approve-expense'?'approved':'rejected',reviewedBy:currentUser.uid,reviewedByName:profile.name,reviewedAt:serverTimestamp()});
-   await addAudit(kind,{id,amount:snap.data().amount});msg(kind==='approve-expense'?'Расход подтверждён.':'Расход отклонён.','success');
-  } else if(kind==='toggle-user'){
-   if(!isOwner())throw new Error('Только владелец может управлять доступом.');
-   const ref=doc(db,'users',id),snap=await getDoc(ref);if(!snap.exists())throw new Error('Пользователь не найден.');
-   await updateDoc(ref,{active:snap.data().active===false?true:false,updatedAt:serverTimestamp()});
-   await addAudit('user_status_changed',{id});msg('Статус пользователя изменён.','success');
-  } else if(kind==='copy-link'){
-   await navigator.clipboard.writeText(location.href.split('#')[0]);msg('Ссылка для входа скопирована.','success');
-  }
-  await refresh();
- }catch(err){msg(err.message||'Не удалось выполнить действие.','error');button.disabled=false;}
+  await signInAnonymously(auth);
+  onAuthStateChanged(auth,async user=>{
+   if(!user)return;currentUser=user;$('ownerUid').value=user.uid;
+   try{
+    const snap=await getDoc(doc(db,'users',user.uid));
+    if(snap.exists()){profile=snap.data();$('setupCard').classList.add('hidden');$('appArea').classList.remove('hidden');await loadData();}
+    else{
+     $('setupCard').classList.remove('hidden');
+     const code=new URLSearchParams(location.search).get('invite');
+     if(code){$('inviteCode').value=code;$('appArea').classList.remove('hidden');$('nav').innerHTML='<button class="tab active" data-view="people">Активация приглашения</button>';$('people').classList.remove('hidden');}
+     status('Firebase подключён. Требуется настройка владельца или активация приглашения.');
+    }
+   }catch(e){status('Нет доступа к Firestore. Проверьте Security Rules и включение Anonymous Authentication. '+e.message,'error');$('setupCard').classList.remove('hidden');}
+  });
+ }catch(e){status('Не удалось подключиться. В Firebase Console включите Authentication → Sign-in method → Anonymous. '+e.message,'error');}
 }
-function bindPageActions(){
- $('collectionForm')?.addEventListener('submit',e=>runForm(e,handleCollection));
- $('transferForm')?.addEventListener('submit',e=>runForm(e,handleTransfer));
- $('expenseForm')?.addEventListener('submit',e=>runForm(e,handleExpense));
- $('userForm')?.addEventListener('submit',e=>runForm(e,handleCreateUser));
- $('applyReport')?.addEventListener('click',()=>renderPage());
- $('clearReport')?.addEventListener('click',()=>{const a=$('reportFrom'),b=$('reportTo');if(a)a.value='';if(b)b.value='';renderPage();});
- $('page').querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.id,b.dataset.action,b)));
-}
-async function runForm(e,fn){try{setBusy(true);await fn(e);}catch(err){msg(err.message||'Ошибка сохранения.','error');}finally{setBusy(false);}}
-async function handleCreateUser(e){
- e.preventDefault();if(!isOwner())throw new Error('Создавать пользователей может только владелец.');
- const name=$('uName').value.trim(),email=$('uEmail').value.trim().toLowerCase(),password=$('uPassword').value,role=$('uRole').value;
- if(!name)throw new Error('Укажите имя.');
- if(!['collector','manager'].includes(role))throw new Error('Недопустимая роль.');
- if(users.filter(u=>u.active!==false&&u.role!=='owner').length>=4)throw new Error('Максимум 5 пользователей вместе с владельцем: можно создать не более четырёх ответственных и сборщиков.');
- let secondary;
- try{
-  secondary=initializeApp(firebaseConfig,'secondary-'+Date.now());
-  const secondaryAuth=getAuth(secondary);
-  const credential=await createUserWithEmailAndPassword(secondaryAuth,email,password);
-  await setDoc(doc(db,'users',credential.user.uid),{name,email,role,active:true,createdAt:serverTimestamp(),createdBy:currentUser.uid});
-  await signOut(secondaryAuth);
-  await addAudit('user_created',{uid:credential.user.uid,name,email,role});
-  msg('Пользователь создан. Передайте ему ссылку сайта, email и пароль.','success');
- }finally{if(secondary){try{await deleteApp(secondary);}catch{}}}
- await refresh();
-}
-async function refresh(){
- if(!currentUser)return;
- await loadData();renderNav();renderPage();
-}
-$('loginForm').addEventListener('submit',async e=>{
- e.preventDefault();try{setBusy(true);await signInWithEmailAndPassword(auth,$('loginEmail').value.trim(),$('loginPassword').value);$('loginMsg').classList.add('hidden');}catch(err){loginMsg(friendlyAuthError(err),'error');}finally{setBusy(false);}
-});
-$('signOutBtn').onclick=()=>signOut(auth);
-function friendlyAuthError(e){const c=e.code||'';if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found'))return'Неверная почта или пароль.';if(c.includes('too-many-requests'))return'Слишком много попыток. Попробуйте позже.';if(c.includes('email-already-in-use'))return'Пользователь с такой почтой уже существует.';return e.message||'Не удалось войти.';}
-onAuthStateChanged(auth,async user=>{
- currentUser=user;
- if(!user){profile=null;$('loginView').classList.remove('hidden');$('appView').classList.add('hidden');$('signOutBtn').classList.add('hidden');$('userLine').textContent='';return;}
- try{
-  const snap=await getDoc(doc(db,'users',user.uid));
-  if(!snap.exists()||snap.data().active===false){await signOut(auth);loginMsg('Для этой учётной записи не назначен активный доступ. Обратитесь к владельцу.','error');return;}
-  profile={id:user.uid,...snap.data()};
-  if(!['owner','manager','collector'].includes(profile.role)){await signOut(auth);loginMsg('У этой учётной записи некорректная роль.','error');return;}
-  $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');$('signOutBtn').classList.remove('hidden');$('userLine').textContent=`${profile.name||user.email} · ${roleName(profile.role)}`;
-  activeTab='dashboard';await refresh();
- }catch(err){console.error(err);await signOut(auth);loginMsg('Не удалось загрузить данные. Проверьте Firestore Security Rules и настройку Firebase.','error');}
-});
+$('copyUid').onclick=async()=>{await navigator.clipboard.writeText($('ownerUid').value);status('UID скопирован.','success')};
+$('checkRules').onclick=async()=>{try{await getDoc(doc(db,'meta','settings'));status('Доступ к Firestore подтверждён. Если вы владелец, создайте документ users/'+currentUser.uid с ролью owner согласно README.','success')}catch(e){status('Доступ пока не настроен. Внесите UID в Security Rules из README. '+e.message,'error')}};
+$('refreshBtn').onclick=()=>loadData().catch(e=>status(e.message,'error'));
+$('collectionForm').onsubmit=async e=>{e.preventDefault();try{await createOperation(e.currentTarget,'collection')}catch(x){status(x.message,'error')}};
+$('transferForm').onsubmit=async e=>{e.preventDefault();try{await createOperation(e.currentTarget,'transfer')}catch(x){status(x.message,'error')}};
+$('expenseForm').onsubmit=async e=>{e.preventDefault();try{await createOperation(e.currentTarget,'expense')}catch(x){status(x.message,'error')}};
+$('userForm').onsubmit=async e=>{e.preventDefault();try{await createInvite(e.currentTarget)}catch(x){status(x.message,'error')}};
+$('activateInvite').onclick=()=>activateInvite().catch(e=>status(e.message,'error'));
+setDefaultDates();init();
 </script>
 </body>
 </html>
