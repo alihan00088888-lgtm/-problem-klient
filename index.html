@@ -300,7 +300,7 @@ async function enterApp(user){
  hideNotice(true);await loadData();showPage("dashboard");
 }
 
-$("logoutBtn").onclick=()=>signOut(auth);
+const logoutButton=$("logoutBtn"); if(logoutButton) logoutButton.onclick=()=>signOut(auth);
 $("collectionForm").addEventListener("submit",handleCollection);
 $("transferForm").addEventListener("submit",handleTransfer);
 $("expenseForm").addEventListener("submit",handleExpense);
