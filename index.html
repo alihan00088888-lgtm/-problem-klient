@@ -69,35 +69,38 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;bord
   <section id="page-users" class="hidden">
     <div class="card"><h2>Пользователи</h2><p class="muted">Максимум: владелец + один главный ответственный + до трёх сборщиков (всего не более пяти аккаунтов).</p>
       <form id="userForm"><div class="two"><div><label>Имя</label><input id="newName" required maxlength="80"></div><div><label>Роль</label><select id="newRole"><option value="responsible">Главный ответственный</option><option value="collector">Сборщик</option></select></div></div>
-      <p class="muted" style="font-size:12px">Создаётся индивидуальная ссылка. Отправьте её нужному человеку. Сборщик активирует свою ссылку при первом открытии.</p><button>Создать ссылку доступа</button></form>
-    </div><div class="card"><h2>Пользователи</h2><div id="usersTable"></div></div><div class="card"><h2>Ссылки доступа</h2><div id="linksTable"></div><p class="muted" style="font-size:12px">Не пересылайте чужие ссылки: ссылка определяет роль вошедшего пользователя.</p></div>
+      <p class="muted" style="font-size:12px">Создаётся ссылка для этого браузера. В автономном режиме ссылка и данные не переносятся на другие устройства.</p><button>Создать ссылку доступа</button></form>
+    </div><div class="card"><h2>Пользователи</h2><div id="usersTable"></div></div><div class="card"><h2>Ссылки доступа</h2><div id="linksTable"></div><p class="muted" style="font-size:12px">Автономные ссылки действуют только в этом браузере и не обеспечивают общий доступ между устройствами.</p></div>
   </section>
   <section id="page-history" class="hidden"><div class="card"><h2>Журнал операций</h2><div id="historyTable"></div></div></section>
-  <div class="foot">«Касса» · Данные синхронизируются через Firebase. Вход по персональным ссылкам. Для работы должны быть применены правила Firebase из комплекта и включён анонимный вход.</div>
+  <div class="foot">«Касса» · Автономный режим: данные сохраняются только в этом браузере на этом устройстве. Между устройствами синхронизации нет.</div>
 </div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, get, set, push, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCcBRKtQpboKHKj8b8m2za18RxeVt3HYk0",
-  authDomain: "moy-proect-6c978.firebaseapp.com",
-  databaseURL: "https://moy-proect-6c978-default-rtdb.firebaseio.com",
-  projectId: "moy-proect-6c978",
-  storageBucket: "moy-proect-6c978.firebasestorage.app",
-  messagingSenderId: "356139023031",
-  appId: "1:356139023031:web:cc33b8de8b03b6bfc8eb32",
-  measurementId: "G-VQZ3JBF63V"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-const storage = getStorage(app);
-const secondaryApp = initializeApp(firebaseConfig, "secondaryAuthApp");
-const secondaryAuth = getAuth(secondaryApp);
-
+<script>
+// Автономный режим: данные хранятся только в этом браузере (localStorage), Firebase не используется.
+const LOCAL_DB_KEY="kassa_local_database_v1";
+const LOCAL_UID_KEY="kassa_local_uid_v1";
+let localDb; try { localDb=JSON.parse(localStorage.getItem(LOCAL_DB_KEY)||"{}"); } catch { localDb={}; }
+function persistLocal(){ localStorage.setItem(LOCAL_DB_KEY,JSON.stringify(localDb)); }
+function pathParts(p){return String(p||"").split("/").filter(Boolean)}
+function readPath(p){let x=localDb;for(const k of pathParts(p)){if(x==null||typeof x!=="object")return undefined;x=x[k]}return x}
+function writePath(p,v){const a=pathParts(p);if(!a.length){localDb=v;persistLocal();return}let x=localDb;for(let i=0;i<a.length-1;i++){if(!x[a[i]]||typeof x[a[i]]!=="object")x[a[i]]={};x=x[a[i]]}if(v===null)delete x[a[a.length-1]];else x[a[a.length-1]]=v;persistLocal()}
+const db={local:true}, storage={local:true};
+const auth={currentUser:{uid:localStorage.getItem(LOCAL_UID_KEY)||("local-"+Math.random().toString(36).slice(2)+Date.now().toString(36))}};
+localStorage.setItem(LOCAL_UID_KEY,auth.currentUser.uid);
+function onAuthStateChanged(_auth,cb){setTimeout(()=>cb(auth.currentUser),0);return ()=>{}}
+async function signInAnonymously(){return {user:auth.currentUser}}
+async function signOut(){return true}
+function ref(_db,path=""){return {path}}
+function get(r){let p=r.path;let v=readPath(p);if(r.filter){v=Object.fromEntries(Object.entries(v||{}).filter(([k,x])=>x?.[r.filter.child]===r.filter.value))}return Promise.resolve({exists:()=>v!==undefined&&v!==null,val:()=>v===undefined?null:JSON.parse(JSON.stringify(v))})}
+function set(r,v){writePath(r.path,v);return Promise.resolve()}
+function update(r,v){const old=readPath(r.path)||{};writePath(r.path,{...old,...v});return Promise.resolve()}
+function push(r){return {key:"k_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,10),path:r.path}}
+function orderByChild(child){return {child}}
+function equalTo(value){return {value}}
+function query(r,order,eq){return {...r,filter:{child:order.child,value:eq.value}}}
+function storageRef(_s,path){return {path}}
+async function uploadBytes(r,file){const data=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(file)});writePath("_localReceipts/"+r.path.replaceAll("/","_"),data);return {ref:r}}
+async function getDownloadURL(r){return readPath("_localReceipts/"+r.path.replaceAll("/","_"))||""}
 const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat("ru-RU",{style:"currency",currency:"RUB",maximumFractionDigits:2}).format(Number(n||0));
 const dateNow = () => new Date().toLocaleDateString("sv-SE");
@@ -313,17 +316,16 @@ $("exportCsv").onclick=()=>{
 setDefaults();
 onAuthStateChanged(auth,async user=>{
  currentUser=user;
- if(bootstrapInProgress)return;
- if(!user){$("authView").classList.remove("hidden");$("appView").classList.add("hidden");$("logoutBtn").classList.add("hidden");$("who").textContent="";if(incomingAccessToken&&!autoLinkAttempted){autoLinkAttempted=true;try{await signInAnonymously(auth)}catch(e){clearAccessParam();notice("Не удалось открыть ссылку: включите анонимный вход Firebase.",true)}}return}
  try{
-  const p=await get(ref(db,"users/"+user.uid));
+  let p=await get(ref(db,"users/"+user.uid));
   if(!p.exists()){
-    if(incomingAccessToken){await claimAccessLink(user,incomingAccessToken);return}
-    if(inviteInProgress)return;
-    await signOut(auth);notice("Профиль не найден. Откройте действующую персональную ссылку доступа.",true);return;
-  }
-  profile={uid:user.uid,...p.val()};await enterApp(user);
- }catch(e){notice("Ошибка входа: "+friendlyError(e),true)}
+    // Первый запуск в этом браузере: автоматически создаём локальный профиль владельца.
+    const owner={name:"Владелец",role:"owner",active:true,createdAt:stamp()};
+    await set(ref(db,"users/"+user.uid),owner);
+    profile={uid:user.uid,...owner};
+  } else profile={uid:user.uid,...p.val()};
+  await enterApp(user);
+ }catch(e){notice("Не удалось открыть локальные данные: "+friendlyError(e),true)}
 });
 </script>
 </body>
