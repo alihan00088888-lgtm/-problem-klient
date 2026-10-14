@@ -13,7 +13,7 @@
 :root{--navy:#172554;--blue:#2563eb;--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c;--amber:#a16207}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
 header{background:var(--navy);color:#fff;padding:16px 20px;display:flex;gap:12px;align-items:center;justify-content:flex-start;position:sticky;top:0;z-index:5}
-header h1{margin:0;font-size:22px}header .sub{font-size:12px;opacity:.8}.wrap{max-width:1200px;margin:auto;padding:18px}
+header h1{margin:0;font-size:22px}header .sub{font-size:12px;opacity:.8}header .identity{margin-left:auto;text-align:right;min-width:0}header .identity-name{font-size:13px;font-weight:750;max-width:52vw;overflow-wrap:anywhere}header .identity-role{font-size:11px;opacity:.78} .actions{min-width:130px}.wrap{max-width:1200px;margin:auto;padding:18px}
 button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;cursor:pointer;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e2e8f0;color:#172033}.danger{background:#b91c1c}.success{background:#15803d}.small{padding:6px 9px;font-size:13px}
 input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:var(--text)}label{font-size:13px;color:#334155;display:block;margin:9px 0 5px}textarea{min-height:70px;resize:vertical}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 3px 12px #0f172a08;margin-bottom:14px}.metric .label{color:var(--muted);font-size:13px}.metric .value{font-size:25px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{background:#e2e8f0;color:#334155}.tabs button.active{background:var(--navy);color:#fff}.hidden{display:none!important}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;color:var(--muted);white-space:nowrap}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;background:#e2e8f0}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}.notice{padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:14px;margin-bottom:14px}.error{background:#fef2f2;color:#991b1b}.success-note{background:#f0fdf4;color:#166534}.auth{max-width:430px;margin:7vh auto;padding:22px}.auth h2{margin-top:0}.actions{display:flex;gap:6px;flex-wrap:wrap}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.section-title h2{font-size:18px;margin:0 0 12px}.foot{font-size:12px;color:var(--muted);padding:18px 0}.pill{padding:4px 8px;border-radius:7px;background:#f1f5f9;font-size:12px}
@@ -104,7 +104,7 @@ header h1{font-size:25px;letter-spacing:-.7px}
 </style>
 </head>
 <body>
-<header><div><h1>Касса</h1></div></header>
+<header><div><h1 id="brandTitle">Касса</h1><div class="sub">Финансовая панель</div></div><div class="identity"><div class="identity-name" id="identityName">Личный кабинет</div><div class="identity-role" id="identityRole"></div></div></header>
 <div id="authView" class="wrap hidden"><div class="card auth"><div id="authNotice" class="notice hidden"></div></div></div>
 <div id="appView" class="wrap">
   <div id="globalNotice" class="notice hidden"></div>
@@ -145,7 +145,7 @@ header h1{font-size:25px;letter-spacing:-.7px}
     <div class="card"><h2>Ожидают подтверждения</h2><div id="pendingTable"></div></div>
   </section>
   <section id="page-reports" class="hidden">
-    <div class="card"><h2>Отчёт</h2><div class="row"><div><label>С даты</label><input type="date" id="reportFrom"></div><div><label>По дату</label><input type="date" id="reportTo"></div><div class="fit" style="align-self:end"><button id="reportApply">Применить</button></div><div class="fit" style="align-self:end"><button id="exportCsv" class="secondary">Экспорт CSV</button></div></div><div id="reportContent" style="margin-top:14px"></div></div>
+    <div class="card"><h2>Отчёт</h2><p class="muted" style="font-size:12px">Отчёт формируется из финансовых записей. Чтобы убрать запись из отчёта, измените или удалите исходную операцию в разделе «История».</p><div class="row"><div><label>С даты</label><input type="date" id="reportFrom"></div><div><label>По дату</label><input type="date" id="reportTo"></div><div class="fit" style="align-self:end"><button id="reportApply">Применить</button></div><div class="fit" style="align-self:end"><button id="exportCsv" class="secondary">Экспорт CSV</button></div></div><div id="reportContent" style="margin-top:14px"></div></div>
   </section>
   <section id="page-users" class="hidden">
     <div class="card"><h2>Пользователи</h2><p class="muted">Максимум: владелец + один главный ответственный + до трёх сборщиков (всего не более пяти аккаунтов).</p>
@@ -296,20 +296,54 @@ function renderDashboard(){
 }
 function statusBadge(status){let label=status==="pending"?"Ожидает":status==="approved"?"Подтверждено":status==="rejected"?"Отклонено":status==="correction"?"Корректировка":status;let cls=status==="approved"?"ok":status==="pending"?"wait":"no";return `<span class="badge ${cls}">${esc(label)}</span>`}
 function table(headers,rows){if(!rows.length)return "<p class='muted'>Записей пока нет.</p>";return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v??"—"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
+function recordActions(type,x){
+ const ownerOrResponsible=canSeeAll();
+ const own=x.createdBy===currentUser.uid||x.collectorUid===currentUser.uid;
+ const canEdit=ownerOrResponsible || (own && (type==="collections" || x.status==="pending"));
+ const canDelete=ownerOrResponsible || (own && (type==="collections" || x.status==="pending"));
+ if(!canEdit&&!canDelete)return "—";
+ return `<div class="actions">${canEdit?`<button class="small secondary" data-edit-type="${type}" data-edit-id="${x.id}">Изменить</button>`:""}${canDelete?`<button class="small danger" data-delete-type="${type}" data-delete-id="${x.id}">Удалить</button>`:""}</div>`;
+}
+function bindRecordActions(root){
+ root.querySelectorAll('[data-edit-type]').forEach(b=>b.onclick=()=>editRecord(b.dataset.editType,b.dataset.editId));
+ root.querySelectorAll('[data-delete-type]').forEach(b=>b.onclick=()=>deleteRecord(b.dataset.deleteType,b.dataset.deleteId));
+}
 function renderCollections(){
-  const rows=visibleCollections().map(x=>[fmtDate(x.date),money(x.amount),esc(x.note||"—"),esc(fmtUser(x.createdBy)),esc(x.createdBy===currentUser.uid?"Вы":"Сборщик")]);
-  $("collectionsTable").innerHTML=table(["Дата","Сумма","Описание","Кто внёс запись",""],rows);
+  const rows=visibleCollections().map(x=>[fmtDate(x.date),money(x.amount),esc(x.note||"—"),esc(fmtUser(x.createdBy)),recordActions("collections",x)]);
+  $("collectionsTable").innerHTML=table(["Дата","Сумма","Описание","Кто внёс запись","Действия"],rows);bindRecordActions($("collectionsTable"));
   $("collectionForm").classList.remove("hidden");
 }
 function renderTransfers(){
- const rows=visibleTransfers().map(x=>[fmtDate(x.date),money(x.amount),esc(fmtUser(x.collectorUid)),statusBadge(x.status),esc(x.note||"—"),canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-transfer="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-transfer="${x.id}" data-decision="rejected">Отклонить</button></div>`:"—"]);
+ const rows=visibleTransfers().map(x=>[fmtDate(x.date),money(x.amount),esc(fmtUser(x.collectorUid)),statusBadge(x.status),esc(x.note||"—"),canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-transfer="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-transfer="${x.id}" data-decision="rejected">Отклонить</button>${recordActions("transfers",x)}</div>`:recordActions("transfers",x)]);
  $("transfersTable").innerHTML=table(["Дата","Сумма","Сборщик","Статус","Комментарий","Действия"],rows);
- $("transfersTable").querySelectorAll("[data-transfer]").forEach(b=>b.onclick=()=>decide("transfers",b.dataset.transfer,b.dataset.decision));
+ $("transfersTable").querySelectorAll("[data-transfer]").forEach(b=>b.onclick=()=>decide("transfers",b.dataset.transfer,b.dataset.decision));bindRecordActions($("transfersTable"));
 }
 function renderExpenses(){
- const rows=visibleExpenses().map(x=>[fmtDate(x.date),money(x.amount),esc(x.purpose),esc(fmtUser(x.createdBy)),statusBadge(x.status),x.receiptUrl?`<a href="${esc(x.receiptUrl)}" target="_blank" rel="noopener">Чек</a>`:"—",canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-expense="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-expense="${x.id}" data-decision="rejected">Отклонить</button></div>`:"—"]);
+ const rows=visibleExpenses().map(x=>[fmtDate(x.date),money(x.amount),esc(x.purpose),esc(fmtUser(x.createdBy)),statusBadge(x.status),x.receiptUrl?`<a href="${esc(x.receiptUrl)}" target="_blank" rel="noopener">Чек</a>`:"—",`${canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-expense="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-expense="${x.id}" data-decision="rejected">Отклонить</button></div>`:""}${recordActions("expenses",x)}`]);
  $("expensesTable").innerHTML=table(["Дата","Сумма","Назначение","Кто создал","Статус","Чек","Действия"],rows);
- $("expensesTable").querySelectorAll("[data-expense]").forEach(b=>b.onclick=()=>decide("expenses",b.dataset.expense,b.dataset.decision));
+ $("expensesTable").querySelectorAll("[data-expense]").forEach(b=>b.onclick=()=>decide("expenses",b.dataset.expense,b.dataset.decision));bindRecordActions($("expensesTable"));
+}
+async function editRecord(type,id){
+ const store=type==="collections"?collections:type==="transfers"?transfers:expenses;
+ const x=store[id];if(!x)return;
+ const own=x.createdBy===currentUser.uid||x.collectorUid===currentUser.uid;
+ if(!(canSeeAll()||(own&&(type==="collections"||x.status==="pending"))))return alert("У вас нет прав на изменение этой записи.");
+ const date=prompt("Дата (ГГГГ-ММ-ДД):",x.date||dateNow());if(date===null)return;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return alert("Введите дату в формате ГГГГ-ММ-ДД.");
+ const amountText=prompt("Сумма, ₽:",String(x.amount??""));if(amountText===null)return;
+ const amount=Number(amountText);if(!Number.isFinite(amount)||amount<=0)return alert("Сумма должна быть больше нуля.");
+ let patch={date,amount,updatedAt:stamp(),updatedBy:currentUser.uid};
+ if(type==="collections"){const note=prompt("Описание:",x.note||"");if(note===null)return;patch.note=note.trim()}
+ if(type==="transfers"){const note=prompt("Комментарий:",x.note||"");if(note===null)return;patch.note=note.trim();if(x.status==="approved")patch.status="pending",patch.reviewedBy="",patch.reviewedAt="",patch.reviewNote=""}
+ if(type==="expenses"){const purpose=prompt("Назначение расхода:",x.purpose||"");if(purpose===null)return;if(!purpose.trim())return alert("Укажите назначение расхода.");const note=prompt("Комментарий:",x.note||"");if(note===null)return;patch.purpose=purpose.trim();patch.note=note.trim();if(x.status==="approved"&&!canSeeAll())return alert("Подтверждённый расход может изменить только владелец или ответственный.");if(x.status==="approved")patch.status="pending",patch.reviewedBy="",patch.reviewedAt="",patch.reviewNote=""}
+ try{await update(ref(db,`${type}/${id}`),patch);await addAudit("record_edited",{type,recordId:id,amount});await loadData();notice("Запись изменена. При изменении подтверждённой операции она отправлена на повторную проверку.",false,true)}catch(e){notice(friendlyError(e),true,true)}
+}
+async function deleteRecord(type,id){
+ const store=type==="collections"?collections:type==="transfers"?transfers:expenses;const x=store[id];if(!x)return;
+ const own=x.createdBy===currentUser.uid||x.collectorUid===currentUser.uid;
+ if(!(canSeeAll()||(own&&(type==="collections"||x.status==="pending"))))return alert("У вас нет прав на удаление этой записи.");
+ if(!confirm(`Удалить запись «${type==="collections"?"Поступление":type==="transfers"?"Передача":"Расход"}» на сумму ${money(x.amount)}? Это изменит расчётные остатки. Действие нельзя отменить.`))return;
+ try{await addAudit("record_deleted",{type,recordId:id,amount:x.amount,recordSnapshot:x});await set(ref(db,`${type}/${id}`),null);await loadData();notice("Запись удалена.",false,true)}catch(e){notice(friendlyError(e),true,true)}
 }
 function pendingCount(){return entries(transfers).filter(x=>x.status==="pending").length+entries(expenses).filter(x=>x.status==="pending").length}
 function renderApprovals(){
@@ -328,23 +362,42 @@ async function decide(type,key,decision){
  try{await update(ref(db,`${type}/${key}`),{status:decision,reviewedBy:currentUser.uid,reviewedAt:stamp(),reviewNote:reason||""});await addAudit("review_"+type,{recordId:key,decision,reason:reason||""});notice("Решение сохранено.",false,true);await loadData()}catch(e){notice(friendlyError(e),true,true)}
 }
 function renderUsers(){
-  const rows=Object.entries(users||{}).map(([uid,u])=>[esc(u.name||"—"),`<span class="badge">${esc(roleName(u.role))}</span>`,uid===currentUser.uid?"Вы":"—"]);
-  $("usersTable").innerHTML=table(["Имя","Роль","Статус"],rows);
+  const rows=Object.entries(users||{}).map(([uid,u])=>[esc(u.name||"—"),`<span class="badge">${esc(roleName(u.role))}</span>`,u.active===false?"Отключён":(uid===currentUser.uid?"Вы":"Активен"),`<div class="actions">${uid!==currentUser.uid?`<button class="small secondary" data-user-edit="${uid}">Изменить</button><button class="small danger" data-user-delete="${uid}">Удалить</button>`:"Текущий аккаунт"}</div>`]);
+  $("usersTable").innerHTML=table(["Имя","Роль","Статус","Действия"],rows);
+  $("usersTable").querySelectorAll("[data-user-edit]").forEach(b=>b.onclick=()=>editUser(b.dataset.userEdit));
+  $("usersTable").querySelectorAll("[data-user-delete]").forEach(b=>b.onclick=()=>deleteUser(b.dataset.userDelete));
   const links=Object.entries(accessLinks||{}).map(([token,l])=>({token,...l}));
   if(profile?.accessToken&&!links.some(l=>l.token===profile.accessToken))links.unshift({token:profile.accessToken,name:"Владелец",role:"owner",active:true,permanent:true});
-  const linkRows=links.map(l=>[esc(l.name||"Пользователь"),esc(roleName(l.role)),l.permanent?"Постоянная ссылка владельца":(l.active?"Ожидает первого входа":"Активирована"),`<button class="small" data-copy-link="${esc(l.token)}">Копировать ссылку</button>`]);
+  const linkRows=links.map(l=>[esc(l.name||"Пользователь"),esc(roleName(l.role)),l.permanent?"Постоянная ссылка владельца":(l.active?"Ожидает первого входа":"Активирована"),`<div class="actions"><button class="small" data-copy-link="${esc(l.token)}">Копировать</button>${!l.permanent?`<button class="small danger" data-link-delete="${esc(l.token)}">Удалить</button>`:""}</div>`]);
   if(!profile?.accessToken)linkRows.unshift(["Владелец",esc(roleName("owner")),"Ссылка ещё не создана",'<button class="small" data-create-owner-link="1">Создать ссылку владельца</button>']);
-  $("linksTable").innerHTML=table(["Имя","Роль","Состояние","Ссылка"],linkRows);
-  $("linksTable").querySelectorAll("[data-copy-link]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(accessUrl(b.dataset.copyLink));notice("Ссылка скопирована. Отправьте её пользователю.",false,true)}catch(e){prompt("Скопируйте персональную ссылку:",accessUrl(b.dataset.copyLink))}});
+  $("linksTable").innerHTML=table(["Имя","Роль","Состояние","Ссылка / действия"],linkRows);
+  $("linksTable").querySelectorAll("[data-copy-link]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(accessUrl(b.dataset.copyLink));notice("Ссылка скопирована.",false,true)}catch(e){prompt("Скопируйте персональную ссылку:",accessUrl(b.dataset.copyLink))}});
+  $("linksTable").querySelectorAll("[data-link-delete]").forEach(b=>b.onclick=async()=>{if(!confirm("Удалить ссылку доступа? Пользователь, который ещё не активировал её, не сможет войти по этой ссылке."))return;await set(ref(db,"accessLinks/"+b.dataset.linkDelete),null);await addAudit("access_link_deleted",{token:b.dataset.linkDelete});await loadData()});
   $("linksTable").querySelector("[data-create-owner-link]")?.addEventListener("click",createOwnerAccessLink);
-} 
+}
+async function editUser(uid){
+ if(!isOwner())return;const u=users[uid];if(!u)return;
+ const name=prompt("Имя, отображаемое в личном кабинете:",u.name||"");if(name===null)return;if(!name.trim())return alert("Имя не может быть пустым.");
+ const role=prompt("Роль: responsible — главный ответственный; collector — сборщик",u.role||"collector");if(role===null)return;if(!["responsible","collector"].includes(role))return alert("Допустимы роли responsible или collector.");
+ if(role==="responsible"&&Object.entries(users).some(([id,x])=>id!==uid&&x.role==="responsible"&&x.active!==false))return alert("Главный ответственный уже существует.");
+ if(role==="collector"&&Object.entries(users).filter(([id,x])=>id!==uid&&x.role==="collector"&&x.active!==false).length>=3)return alert("Можно иметь не более трёх сборщиков.");
+ await update(ref(db,"users/"+uid),{name:name.trim(),role,updatedAt:stamp(),updatedBy:currentUser.uid});await addAudit("user_edited",{uid,oldName:u.name,newName:name.trim(),role});await loadData();notice("Пользователь обновлён.",false,true)
+}
+async function deleteUser(uid){
+ if(!isOwner()||uid===currentUser.uid)return;const u=users[uid];if(!u)return;
+ if(!confirm(`Удалить пользователя «${u.name||"Без имени"}»? Его финансовые записи останутся в истории, но доступ к аккаунту будет отключён.`))return;
+ await update(ref(db,"users/"+uid),{active:false,deletedAt:stamp(),deletedBy:currentUser.uid});
+ for(const [token,l] of Object.entries(accessLinks||{})){if(l.claimedBy===uid||l.name===u.name)await update(ref(db,"accessLinks/"+token),{active:false})}
+ await addAudit("user_disabled",{uid,name:u.name});await loadData();notice("Пользователь отключён. Финансовая история сохранена.",false,true)
+}
 async function createOwnerAccessLink(){
  if(!isOwner())return;
  try{const token=randomToken();await set(ref(db,"accessLinks/"+token),{name:"Владелец",role:"owner",active:true,permanent:true,createdAt:stamp(),createdBy:currentUser.uid});await update(ref(db,"users/"+currentUser.uid),{accessToken:token});profile.accessToken=token;await loadData();notice("Постоянная ссылка владельца создана. Сохраните её.",false,true)}catch(e){notice(friendlyError(e),true,true)}
 }
 function renderHistory(){
- const rows=[...entries(collections).map(x=>({...x,type:"Поступление"})),...entries(transfers).map(x=>({...x,type:"Передача"})),...entries(expenses).map(x=>({...x,type:"Расход"}))].filter(ownRecord).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).map(x=>[fmtDate(x.date),esc(x.type),money(x.amount),esc(fmtUser(x.createdBy||x.collectorUid)),statusBadge(x.status||"approved"),esc(x.note||x.purpose||"—")]);
- $("historyTable").innerHTML=table(["Дата","Тип","Сумма","Автор","Статус","Описание"],rows);
+ const records=[...entries(collections).map(x=>({...x,type:"Поступление",store:"collections"})),...entries(transfers).map(x=>({...x,type:"Передача",store:"transfers"})),...entries(expenses).map(x=>({...x,type:"Расход",store:"expenses"}))].filter(ownRecord).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
+ const rows=records.map(x=>[fmtDate(x.date),esc(x.type),money(x.amount),esc(fmtUser(x.createdBy||x.collectorUid)),statusBadge(x.status||"approved"),esc(x.note||x.purpose||"—"),recordActions(x.store,x)]);
+ $("historyTable").innerHTML=table(["Дата","Тип","Сумма","Автор","Статус","Описание","Действия"],rows);bindRecordActions($("historyTable"));
 }
 function renderReport(){
  const from=$("reportFrom").value,to=$("reportTo").value;
@@ -357,6 +410,7 @@ function renderReport(){
 }
 function renderPage(){
  if(!profile)return;
+ $("brandTitle").textContent="Касса";$("identityName").textContent=profile.name?`Касса · ${profile.name}`:"Личный кабинет";$("identityRole").textContent=roleName(profile.role);
  document.querySelectorAll(".quick-actions [data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
  // Не только скрываем пункты меню: не показываем недоступные разделы даже при прямом вызове.
  const permitted=new Set(allowedTabs().map(([page])=>page));
