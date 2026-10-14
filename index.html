@@ -1,701 +1,318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Учет договоров (Облачный)</title>
-  <style>
-    :root {
-      --primary: #1b4332;
-      --accent: #52b788;
-      --bg: #f4f6f4;
-      --text: #212529;
-      --text-muted: #6c757d;
-      --danger: #e63946;
-      --whatsapp: #25D366;
-      --info: #0284c7;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 15px; }
-    .container { max-width: 1400px; margin: 0 auto; }
-
-    .header {
-      background: var(--primary);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .cloud-status {
-      font-size: 0.8rem;
-      background: rgba(255,255,255,0.2);
-      padding: 4px 10px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-top: 5px;
-    }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    .dash-card {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      border-left: 4px solid var(--accent);
-    }
-    .dash-card.danger-border { border-left-color: var(--danger); }
-    .dash-card.info-border { border-left-color: var(--info); }
-    .dash-card h4 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
-    .dash-card .val { font-size: 1.3rem; font-weight: bold; }
-
-    .btn {
-      background: var(--accent);
-      color: var(--primary);
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-edit { background: var(--info); color: white; }
-    .btn-pay { background: #10b981; color: white; }
-    .btn-secondary { background: #6c757d; color: white; }
-    .btn-whatsapp { 
-      background: var(--whatsapp); 
-      color: white; 
-      padding: 4px 8px; 
-      font-size: 0.75rem;
-      border-radius: 4px;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 4px;
-      font-weight: bold;
-    }
-    .btn-map {
-      background: #0284c7;
-      color: white;
-      padding: 3px 6px;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 4px;
-      font-weight: bold;
-    }
-
-    .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      text-align: center;
-    }
-    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-    .filters {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr auto;
-      gap: 10px;
-      margin-bottom: 15px;
-      align-items: center;
-    }
-    .input-field, .select-field, textarea {
-      width: 100%;
-      padding: 9px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      outline: none;
-      font-size: 0.85rem;
-    }
-
-    .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
-    th { background: #f8f9fa; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
-
-    tr.overdue { background-color: #ffe6e6; }
-    tr.today { background-color: #fff9db; }
-
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
-    .badge-уважительная { background: #e3f2fd; color: #0d47a1; }
-    .badge-наглый { background: #ffebee; color: #c62828; }
-    .badge-неорганизованный { background: #fff3e0; color: #ef6c00; }
-
-    .history-log {
-      max-height: 90px;
-      overflow-y: auto;
-      font-size: 0.75rem;
-      background: #f8f9fa;
-      padding: 6px;
-      border: 1px solid #e9ecef;
-      border-radius: 4px;
-      white-space: pre-wrap;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
-      z-index: 1000;
-    }
-    .modal.active { display: flex; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; }
-    .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; color: var(--text-muted); }
-    .form-row { display: flex; gap: 10px; }
-    .form-row .form-group { flex: 1; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-    .action-btns { display: flex; gap: 4px; flex-direction: column; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>Касса</title>
+<style>
+:root{--bg:#f3f6fa;--card:#fff;--ink:#172b4d;--muted:#62748a;--line:#dfe7f0;--blue:#1769e0;--navy:#102a43;--green:#12805c;--red:#c43838;--amber:#a86400;--shadow:0 8px 26px #172b4d0d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;font-weight:650}button.secondary{background:#e9eff7;color:var(--ink)}button.danger{background:#fff0f0;color:var(--red)}button:disabled{opacity:.55;cursor:not-allowed}input,select,textarea{width:100%;border:1px solid #ccd7e4;border-radius:10px;padding:10px 11px;background:white;color:var(--ink)}textarea{min-height:76px;resize:vertical}label{display:block;font-size:13px;color:var(--muted);font-weight:650;margin:0 0 5px}.field{margin-bottom:12px}.hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.topbar{background:var(--navy);color:white;padding:16px max(18px,calc((100% - 1200px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:22px;font-weight:800;letter-spacing:.2px}.userline{font-size:13px;color:#d9e5f3}.wrap{max-width:1200px;margin:0 auto;padding:22px 16px 60px}.login-wrap{max-width:420px;margin:8vh auto;padding:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}.card h2,.card h3{margin:0 0 14px}.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.stat-label{color:var(--muted);font-size:13px}.stat-value{font-size:clamp(21px,3vw,29px);font-weight:800;margin-top:4px;overflow-wrap:anywhere}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.nav button{background:#e4ebf4;color:var(--ink)}.nav button.active{background:var(--blue);color:white}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}td{font-size:14px}.badge{display:inline-block;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:750;background:#edf2f8}.badge.ok{background:#e4f6ed;color:#08734f}.badge.pending{background:#fff3d9;color:#925800}.badge.no{background:#ffebeb;color:#a32626}.notice{padding:12px 14px;border-radius:11px;background:#eef5ff;color:#174a89;margin:0 0 14px}.error{background:#fff0f0;color:#a32626}.success{background:#e8f7ee;color:#096943}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions button{padding:7px 10px;font-size:12px}.section-title{margin:8px 0 14px}.empty{padding:22px;text-align:center;color:var(--muted)}.right{text-align:right}.danger-text{color:var(--red)}.hr{border:0;border-top:1px solid var(--line);margin:16px 0}.foot{color:var(--muted);font-size:12px;margin-top:16px}.inline{display:flex;gap:8px;align-items:center}.inline input{flex:1}.login-card{padding:24px}.login-card h1{margin:0 0 5px}.hidden-file{display:none}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:1fr 1fr}.wrap{padding:14px 10px 40px}.card{padding:14px}.topbar{padding:13px 14px}}
+@media(max-width:520px){.two,.three,.form-grid{grid-template-columns:1fr}.brand{font-size:20px}.userline{max-width:180px;text-align:right}}
+</style>
 </head>
 <body>
+<div class="topbar"><div class="brand">Касса</div><div class="row"><div id="userLine" class="userline"></div><button id="signOutBtn" class="secondary hidden">Выйти</button></div></div>
 
-<div class="container">
-  <div class="header">
-    <div>
-      <h1>Учет проблемных договоров</h1>
-      <div class="cloud-status" id="cloudStatus">☁️ Облако: Подключение...</div>
-    </div>
-    <button class="btn" id="openModalBtn">+ Добавить договор</button>
-  </div>
-
-  <div class="dashboard">
-    <div class="dash-card info-border">
-      <h4>Общий долг</h4>
-      <div class="val" id="sumTotal">0 ₽</div>
-    </div>
-    <div class="dash-card danger-border">
-      <h4>Просрочка на сегодня</h4>
-      <div class="val" id="sumCurrentOverdue" style="color:var(--danger);">0 ₽</div>
-    </div>
-    <div class="dash-card danger-border">
-      <h4>Остаток к получению</h4>
-      <div class="val" id="sumRemaining" style="color:var(--danger);">0 ₽</div>
-    </div>
-    <div class="dash-card">
-      <h4>Взыскано</h4>
-      <div class="val" id="sumPaid" style="color:var(--accent);">0 ₽</div>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab-btn active" id="tabActive">Лист 1: Активные (<span id="countActive">0</span>)</button>
-    <button class="tab-btn" id="tabClosed">Лист 2: Закрытые / Архив (<span id="countClosed">0</span>)</button>
-  </div>
-
-  <div class="filters">
-    <input type="text" id="searchInput" class="input-field" placeholder="Поиск (ФИО, № договора, телефон)...">
-    
-    <select id="filterType" class="select-field">
-      <option value="all">Все категории</option>
-      <option value="уважительная">Затруднение (уважительная)</option>
-      <option value="наглый">Уклоняется / Наглый</option>
-      <option value="неорганизованный">Забыл / Неорганизованный</option>
-    </select>
-
-    <select id="filterStatus" class="select-field">
-      <option value="all">Все этапы</option>
-      <option value="В работе">В работе</option>
-      <option value="Обещал оплатить">Обещал оплатить</option>
-      <option value="Нарушил обещание">Нарушил обещание</option>
-      <option value="На стадии асул">На стадии асул</option>
-    </select>
-
-    <select id="sortBy" class="select-field">
-      <option value="controlAsc">Сортировка: Дата контроля</option>
-      <option value="remDesc">Остаток: От большего</option>
-      <option value="docAsc">По № договора</option>
-    </select>
-
-    <button class="btn btn-secondary" id="btnCallSchedule" style="white-space: nowrap;">📅 Кому звонить сегодня</button>
-  </div>
-
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>№ / Договор</th>
-          <th>Клиент & Контакты</th>
-          <th>Задолженность</th>
-          <th>Адрес</th>
-          <th>Характер</th>
-          <th>Ответственный</th>
-          <th>Контроль</th>
-          <th>Этап</th>
-          <th>История</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
-      <tbody id="contractsTableBody"></tbody>
-    </table>
+<div id="loginView" class="login-wrap">
+  <div class="card login-card">
+    <h1>Вход в кассу</h1><p class="muted">Войдите под своей учётной записью.</p>
+    <div id="loginMsg" class="notice hidden"></div>
+    <form id="loginForm">
+      <div class="field"><label for="loginEmail">Электронная почта</label><input id="loginEmail" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="loginPassword">Пароль</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <button type="submit" style="width:100%">Войти</button>
+    </form>
+    <p class="foot">Первого владельца нужно создать в Firebase Authentication и назначить роль owner в Firestore. Инструкция есть в README.</p>
   </div>
 </div>
 
-<!-- Модальное окно -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <div class="modal-header" id="modalTitle">Новый договор</div>
-    <form id="addContractForm">
-      <input type="hidden" id="editId">
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label>ID / № Договора</label>
-          <input type="text" id="docNum" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label>ФИО Клиента</label>
-          <input type="text" id="clientName" class="input-field" required>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Основной телефон (+79991234567)</label>
-          <input type="text" id="clientPhone" class="input-field" placeholder="+79991234567" required>
-        </div>
-        <div class="form-group">
-          <label>Доп. контакт (Имя: +7999...)</label>
-          <input type="text" id="extraContact" class="input-field" placeholder="Брат: +79991234567">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Адрес проживания / Местоположение</label>
-        <input type="text" id="clientAddress" class="input-field" placeholder="г. Москва, ул. Ленина 10, кв 5">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Общая сумма долга (₽)</label>
-          <input type="number" id="totalAmount" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label>Оплаченная сумма (₽)</label>
-          <input type="number" id="paidAmount" class="input-field" value="0" required>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Дата заключения договора</label>
-          <input type="date" id="contractDate" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label>Срок рассрочки (месяцев)</label>
-          <input type="number" id="monthsCount" class="input-field" min="1" value="12" required>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Характер</label>
-          <select id="clientType" class="select-field">
-            <option value="уважительная">Затруднение (уважительная)</option>
-            <option value="наглый">Уклоняется / Наглый</option>
-            <option value="неорганизованный">Забыл / Неорганизованный</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Ответственный</label>
-          <input type="text" id="responsible" class="input-field" required>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Дата контроля</label>
-          <input type="date" id="controlDate" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label>Этап процесса</label>
-          <select id="processStatus" class="select-field">
-            <option value="В работе">В работе</option>
-            <option value="Обещал оплатить">Обещал оплатить</option>
-            <option value="Нарушил обещание">Нарушил обещание</option>
-            <option value="На стадии асул">На стадии асул</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>История (сохраненные записи):</label>
-        <textarea id="historyText" class="input-field" rows="3" readonly></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Добавить новую заметку:</label>
-        <input type="text" id="newNote" class="input-field" placeholder="Краткий результат...">
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" id="closeModalBtn">Отмена</button>
-        <button type="submit" class="btn">Сохранить в облако</button>
-      </div>
-    </form>
-  </div>
+<div id="appView" class="wrap hidden">
+  <div id="globalMsg" class="notice hidden"></div>
+  <div class="nav" id="nav"></div>
+  <main id="page"></main>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, query, where, orderBy, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCcBRKtQpboKHKj8b8m2za18RxeVt3HYk0",
-    authDomain: "moy-proect-6c978.firebaseapp.com",
-    databaseURL: "https://moy-proect-6c978-default-rtdb.firebaseio.com",
-    projectId: "moy-proect-6c978",
-    storageBucket: "moy-proect-6c978.firebasestorage.app",
-    messagingSenderId: "356139023031",
-    appId: "1:356139023031:web:cc33b8de8b03b6bfc8eb32",
-    measurementId: "G-VQZ3JBF63V"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const contractsRef = ref(db, 'contracts');
-
-  let contracts = [];
-  let currentTab = 'active';
-  let onlyCallsToday = false;
-
-  const tableBody = document.getElementById('contractsTableBody');
-  const modal = document.getElementById('modal');
-  const statusEl = document.getElementById('cloudStatus');
-
-  onValue(contractsRef, (snapshot) => {
-    const data = snapshot.val();
-    contracts = data ? Object.values(data) : [];
-    statusEl.innerHTML = "🟢 Облако: Синхронизировано";
-    statusEl.style.background = "rgba(40, 167, 69, 0.3)";
-    render();
-  }, (error) => {
-    statusEl.innerHTML = "🔴 Ошибка подключения к облаку";
-    statusEl.style.background = "rgba(220, 53, 69, 0.3)";
-  });
-
-  function saveToCloud(contract) {
-    set(ref(db, 'contracts/' + contract.id), contract);
+const firebaseConfig = {
+  apiKey: "AIzaSyCcBRKtQpboKHKj8b8m2za18RxeVt3HYk0",
+  authDomain: "moy-proect-6c978.firebaseapp.com",
+  databaseURL: "https://moy-proect-6c978-default-rtdb.firebaseio.com",
+  projectId: "moy-proect-6c978",
+  storageBucket: "moy-proect-6c978.firebasestorage.app",
+  messagingSenderId: "356139023031",
+  appId: "1:356139023031:web:cc33b8de8b03b6bfc8eb32",
+  measurementId: "G-VQZ3JBF63V"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const rub = n => new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(Number(n||0));
+const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => new Date().toISOString().slice(0,10);
+const dateText = v => v ? esc(v) : '—';
+let currentUser=null, profile=null, users=[], collectionsData=[], transfersData=[], expensesData=[], activeTab='dashboard', busy=false;
+const roleName = r => ({owner:'Владелец',manager:'Главный ответственный',collector:'Сборщик'}[r]||r);
+const isOwner = () => profile?.role==='owner';
+const isManager = () => profile?.role==='manager';
+const isCollector = () => profile?.role==='collector';
+const canSeeAll = () => isOwner()||isManager();
+const personName = uid => users.find(u=>u.id===uid)?.name || (uid===currentUser?.uid ? profile?.name : 'Пользователь');
+const moneyInput = (id) => Number($(id)?.value || 0);
+function msg(text,kind='') { const el=$('globalMsg'); el.textContent=text; el.className='notice '+kind; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),6500); }
+function loginMsg(text,kind='') { const el=$('loginMsg'); el.textContent=text; el.className='notice '+kind; el.classList.remove('hidden'); }
+function setBusy(v){busy=v;document.querySelectorAll('button[type="submit"]').forEach(b=>b.disabled=v);}
+async function addAudit(action, details={}) {
+  try { await addDoc(collection(db,'auditLogs'),{action,details,actorId:currentUser.uid,actorName:profile?.name||currentUser.email,createdAt:serverTimestamp(),date:today()}); } catch(e) { console.warn('Audit log unavailable',e); }
+}
+async function loadData(){
+  if(canSeeAll()){
+    const [u,c,t,e]=await Promise.all([
+      getDocs(collection(db,'users')),
+      getDocs(collection(db,'collections')),
+      getDocs(collection(db,'transfers')),
+      getDocs(collection(db,'expenses'))
+    ]);
+    users=u.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.active!==false);
+    collectionsData=c.docs.map(d=>({id:d.id,...d.data()}));
+    transfersData=t.docs.map(d=>({id:d.id,...d.data()}));
+    expensesData=e.docs.map(d=>({id:d.id,...d.data()}));
+  } else {
+    // Firestore Rules are not filters: collector queries must explicitly be limited to their own records.
+    const [c,t,e]=await Promise.all([
+      getDocs(query(collection(db,'collections'),where('collectorId','==',currentUser.uid))),
+      getDocs(query(collection(db,'transfers'),where('collectorId','==',currentUser.uid))),
+      getDocs(query(collection(db,'expenses'),where('collectorId','==',currentUser.uid)))
+    ]);
+    users=[{id:currentUser.uid,...profile}];
+    collectionsData=c.docs.map(d=>({id:d.id,...d.data()}));
+    transfersData=t.docs.map(d=>({id:d.id,...d.data()}));
+    expensesData=e.docs.map(d=>({id:d.id,...d.data()}));
   }
-
-  // Расчет просрочки на текущую дату по графику
-  function calculateCurrentOverdue(item) {
-    const total = Number(item.totalAmount || 0);
-    const paid = Number(item.paidAmount || 0);
-    const months = Number(item.monthsCount || 1);
-    
-    if (!item.contractDate || months <= 0) {
-      return Math.max(0, total - paid);
-    }
-
-    const startDate = new Date(item.contractDate);
-    const now = new Date();
-    
-    // Считаем пройденное количество месяцев
-    let elapsedMonths = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
-    if (now.getDate() >= startDate.getDate()) {
-      elapsedMonths += 1;
-    }
-
-    elapsedMonths = Math.max(0, Math.min(months, elapsedMonths));
-
-    const monthlyPayment = total / months;
-    const expectedPaid = monthlyPayment * elapsedMonths;
-    const overdue = expectedPaid - paid;
-
-    return Math.max(0, Math.round(overdue));
+}
+function fmtDate(d){return esc(d||'—')}
+function approvedExpenses(){return expensesData.filter(e=>e.status==='approved')}
+function confirmedTransfers(){return transfersData.filter(t=>t.status==='confirmed')}
+function ownCollections(){return collectionsData.filter(x=>x.collectorId===currentUser.uid)}
+function ownExpenses(){return expensesData.filter(x=>x.collectorId===currentUser.uid || x.paidBy===currentUser.uid)}
+function ownTransfers(){return transfersData.filter(x=>x.collectorId===currentUser.uid)}
+function collectorBalance(uid){
+ const collected=collectionsData.filter(x=>x.collectorId===uid).reduce((s,x)=>s+Number(x.amount||0),0);
+ const sent=confirmedTransfers().filter(x=>x.collectorId===uid).reduce((s,x)=>s+Number(x.amount||0),0);
+ const spent=approvedExpenses().filter(x=>x.paidBy===uid && x.payerType==='collector').reduce((s,x)=>s+Number(x.amount||0),0);
+ return collected-sent-spent;
+}
+function managerBalance(){
+ const received=confirmedTransfers().reduce((s,x)=>s+Number(x.amount||0),0);
+ const spent=approvedExpenses().filter(x=>x.payerType==='manager').reduce((s,x)=>s+Number(x.amount||0),0);
+ return received-spent;
+}
+function totals(){
+ const collected=collectionsData.reduce((s,x)=>s+Number(x.amount||0),0);
+ const expenses=approvedExpenses().reduce((s,x)=>s+Number(x.amount||0),0);
+ const pendingT=transfersData.filter(x=>x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0);
+ const pendingE=expensesData.filter(x=>x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0);
+ return {collected,expenses,balance:collected-expenses,pendingT,pendingE};
+}
+function dateSort(a,b){return String(b.date||'').localeCompare(String(a.date||''))}
+function navItems(){
+ if(isOwner()) return [['dashboard','Главная'],['collections','Сборы'],['transfers','Передачи денег'],['expenses','Расходы'],['cash','Касса'],['users','Пользователи'],['reports','Отчёты'],['history','История']];
+ if(isManager()) return [['dashboard','Главная'],['collections','Сборы'],['transfers','Передачи денег'],['expenses','Расходы'],['cash','Касса'],['users','Сборщики'],['reports','Отчёты'],['history','История']];
+ return [['dashboard','Моя касса'],['collections','Мои сборы'],['transfers','Мои передачи'],['expenses','Мои расходы'],['reports','Мой отчёт']];
+}
+function renderNav(){
+ $('nav').innerHTML=navItems().map(([k,n])=>`<button data-tab="${k}" class="${activeTab===k?'active':''}">${n}</button>`).join('');
+ $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;renderNav();renderPage();});
+}
+function stat(label,value,sub=''){return `<div class="card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub?`<div class="small muted">${sub}</div>`:''}</div>`}
+function table(headers,rows){return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="empty">Операций пока нет</td></tr>`}</tbody></table></div>`}
+function opBadge(s){return s==='confirmed'||s==='approved' ? '<span class="badge ok">Подтверждено</span>' : s==='rejected' ? '<span class="badge no">Отклонено</span>' : '<span class="badge pending">Ожидает</span>'}
+function dashboard(){
+ const t=totals();
+ if(canSeeAll()){
+  const rows=[...users.filter(u=>u.role==='collector').map(u=>`<tr><td>${esc(u.name)}</td><td>${rub(collectionsData.filter(c=>c.collectorId===u.id).reduce((s,c)=>s+Number(c.amount||0),0))}</td><td>${rub(confirmedTransfers().filter(x=>x.collectorId===u.id).reduce((s,x)=>s+Number(x.amount||0),0))}</td><td>${rub(approvedExpenses().filter(x=>x.paidBy===u.id&&x.payerType==='collector').reduce((s,x)=>s+Number(x.amount||0),0))}</td><td><b>${rub(collectorBalance(u.id))}</b></td></tr>`)];
+  return `<h2 class="section-title">Общая касса</h2><div class="grid stats">${stat('Всего собрано',rub(t.collected))}${stat('Расходы подтверждены',rub(t.expenses))}${stat('Текущий остаток',rub(t.balance))}${stat('У главного ответственного',rub(managerBalance()))}</div>
+  <div class="grid two"><section class="card"><h3>Ожидают обработки</h3><p>Передачи денег: <b>${rub(t.pendingT)}</b></p><p>Расходы сборщиков: <b>${rub(t.pendingE)}</b></p><p class="muted small">Ожидающие операции не уменьшают баланс до подтверждения.</p></section><section class="card"><h3>Контроль кассы</h3><p>Сумма остатков сборщиков и ответственного: <b>${rub(users.filter(u=>u.role==='collector').reduce((s,u)=>s+collectorBalance(u.id),0)+managerBalance())}</b></p><p class="muted small">Передачи между людьми не считаются расходами и не меняют общий остаток.</p></section></div>
+  <section class="card"><h3>Остатки по сборщикам</h3>${table(['Сборщик','Собрано','Передано','Расходы','Остаток'],rows.join(''))}</section>
+  <section class="card"><h3>Последние операции</h3>${recentRows()}</section>`;
+ }
+ const col=ownCollections().reduce((s,x)=>s+Number(x.amount||0),0);
+ const sent=confirmedTransfers().filter(x=>x.collectorId===currentUser.uid).reduce((s,x)=>s+Number(x.amount||0),0);
+ const spent=approvedExpenses().filter(x=>x.paidBy===currentUser.uid&&x.payerType==='collector').reduce((s,x)=>s+Number(x.amount||0),0);
+ return `<h2 class="section-title">Моя касса</h2><div class="grid stats">${stat('Всего собрано',rub(col))}${stat('Передано ответственному',rub(sent))}${stat('Мои подтверждённые расходы',rub(spent))}${stat('Должно быть у меня',rub(collectorBalance(currentUser.uid)))}</div>
+ <section class="card"><h3>Мои последние операции</h3>${recentRows()}</section>`;
+}
+function recentRows(){
+ const all=[
+ ...collectionsData.map(x=>({date:x.date,type:'Сбор',who:personName(x.collectorId),amount:x.amount,note:x.note||'',status:'approved'})),
+ ...transfersData.map(x=>({date:x.date,type:'Передача',who:personName(x.collectorId),amount:x.amount,note:x.note||'',status:x.status})),
+ ...expensesData.map(x=>({date:x.date,type:'Расход',who:personName(x.paidBy),amount:x.amount,note:x.note||'',status:x.status}))
+ ].filter(x=>canSeeAll()||x.who===profile?.name).sort(dateSort).slice(0,8);
+ return table(['Дата','Тип','Кто','Сумма','Описание','Статус'],all.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.who)}</td><td>${rub(x.amount)}</td><td>${esc(x.note)}</td><td>${opBadge(x.status)}</td></tr>`).join(''));
+}
+function collectionsPage(){
+ const list=canSeeAll()?collectionsData:ownCollections();
+ const rows=[...list].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.collectorId))}</td><td><b>${rub(x.amount)}</b></td><td>${esc(x.note||'—')}</td><td>${esc(x.createdByName||'—')}</td></tr>`).join('');
+ return `<h2 class="section-title">${canSeeAll()?'Сборы':'Мои сборы'}</h2><div class="grid two"><section class="card"><h3>Добавить поступление</h3><form id="collectionForm"><div class="field"><label>Сумма, ₽</label><input id="cAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>Дата получения</label><input id="cDate" type="date" value="${today()}" required></div>${canSeeAll()?`<div class="field"><label>Сборщик</label><select id="cCollector">${users.filter(u=>u.role==='collector').map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></div>`:''}<div class="field"><label>Описание / примечание (необязательно)</label><input id="cNote" maxlength="300" placeholder="Например, сбор за день"></div><button type="submit">Сохранить поступление</button></form></section><section class="card"><h3>Правило учёта</h3><p>Каждое поступление записывается отдельной строкой. Список участников не ведётся.</p><p class="muted small">Владелец и главный ответственный видят все поступления. Сборщик видит только свои.</p></section></div><section class="card"><h3>История поступлений</h3>${table(['Дата','Сборщик','Сумма','Примечание','Записал'],rows)}</section>`;
+}
+function transfersPage(){
+ const list=canSeeAll()?transfersData:ownTransfers();
+ const rows=[...list].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.collectorId))}</td><td><b>${rub(x.amount)}</b></td><td>${esc(x.note||'—')}</td><td>${opBadge(x.status)}</td><td>${canSeeAll()&&x.status==='pending'?`<div class="actions"><button data-action="confirm-transfer" data-id="${x.id}">Подтвердить получение</button><button class="danger" data-action="reject-transfer" data-id="${x.id}">Отклонить</button></div>`:''}</td></tr>`).join('');
+ return `<h2 class="section-title">${canSeeAll()?'Передачи денег':'Мои передачи денег'}</h2><div class="grid two"><section class="card"><h3>Зарегистрировать передачу</h3><form id="transferForm"><div class="field"><label>Сумма, ₽</label><input id="tAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>Дата передачи</label><input id="tDate" type="date" value="${today()}" required></div>${canSeeAll()?`<div class="field"><label>Сборщик, который передал деньги</label><select id="tCollector">${users.filter(u=>u.role==='collector').map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></div>`:''}<div class="field"><label>Примечание</label><input id="tNote" maxlength="300" placeholder="Например, наличные за неделю"></div><button type="submit">Отправить на подтверждение</button></form></section><section class="card"><h3>Как это работает</h3><p>Передача становится завершённой только после подтверждения получения ответственным.</p><p class="muted small">До подтверждения сумма остаётся в балансе сборщика и показывается как ожидающая.</p></section></div><section class="card"><h3>История передач</h3>${table(['Дата','Сборщик','Сумма','Примечание','Статус','Действие'],rows)}</section>`;
+}
+function expensesPage(){
+ const list=canSeeAll()?expensesData:ownExpenses();
+ const rows=[...list].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.paidBy))}</td><td>${esc(x.payerType==='manager'?'Касса ответственного':'Касса сборщика')}</td><td><b>${rub(x.amount)}</b></td><td>${esc(x.category||'—')}</td><td>${esc(x.note||'—')}</td><td>${opBadge(x.status)}</td><td>${canSeeAll()&&x.status==='pending'?`<div class="actions"><button data-action="approve-expense" data-id="${x.id}">Подтвердить</button><button class="danger" data-action="reject-expense" data-id="${x.id}">Отклонить</button></div>`:''}</td></tr>`).join('');
+ const payerOptions=canSeeAll()?`<option value="manager">Касса ответственного</option>${users.filter(u=>u.role==='collector').map(u=>`<option value="${u.id}">Касса: ${esc(u.name)}</option>`).join('')}`:`<option value="${currentUser.uid}">Моя касса</option>`;
+ return `<h2 class="section-title">Расходы на строительство</h2><div class="grid two"><section class="card"><h3>Добавить расход</h3><form id="expenseForm"><div class="field"><label>Сумма, ₽</label><input id="eAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>Дата оплаты</label><input id="eDate" type="date" value="${today()}" required></div><div class="field"><label>Категория</label><select id="eCategory" required><option value="">Выберите</option><option>Стройматериалы</option><option>Работа строителей</option><option>Доставка</option><option>Инструменты</option><option>Проект / документы</option><option>Прочее</option></select></div>${canSeeAll()?`<div class="field"><label>Из чьей кассы оплачено</label><select id="ePayer">${payerOptions}</select></div>`:''}<div class="field"><label>Описание расхода</label><textarea id="eNote" maxlength="1000" required placeholder="Что купили или за что заплатили"></textarea></div><div class="field"><label>Ссылка на чек (необязательно)</label><input id="eReceipt" type="url" placeholder="https://..."></div><button type="submit">Сохранить расход</button></form></section><section class="card"><h3>Подтверждение</h3><p>Расход сборщика появляется как ожидающий и уменьшает его остаток только после подтверждения ответственным.</p><p>Расход из кассы ответственного фиксируется как подтверждённый сразу.</p><p class="muted small">Запись о расходе не заменяет предварительное разрешение: сборщик должен согласовать покупку с ответственным отдельно.</p></section></div><section class="card"><h3>История расходов</h3>${table(['Дата','Кто оплатил','Откуда деньги','Сумма','Категория','Описание','Статус','Действие'],rows)}</section>`;
+}
+function cashPage(){
+ const t=totals();
+ const collectorRows=users.filter(u=>u.role==='collector').map(u=>`<tr><td>${esc(u.name)}</td><td>${rub(collectorBalance(u.id))}</td><td>${rub(transfersData.filter(x=>x.collectorId===u.id&&x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0))}</td></tr>`).join('');
+ return `<h2 class="section-title">Касса и остатки</h2><div class="grid stats">${stat('Собрано за всё время',rub(t.collected))}${stat('Подтверждённые расходы',rub(t.expenses))}${stat('Общий текущий остаток',rub(t.balance))}${stat('У ответственного',rub(managerBalance()))}</div><section class="card"><h3>Остатки сборщиков</h3>${table(['Сборщик','Остаток по учёту','Передачи на подтверждении'],collectorRows)}</section><section class="card"><h3>Сверка</h3><p>Общий остаток = все зарегистрированные сборы − подтверждённые расходы.</p><p>Сумма остатков у сборщиков и ответственного: <b>${rub(users.filter(u=>u.role==='collector').reduce((s,u)=>s+collectorBalance(u.id),0)+managerBalance())}</b></p><p class="muted small">Это расчётный остаток. Фактическую наличность нужно периодически сверять вручную и фиксировать расхождения отдельной корректировкой.</p></section>`;
+}
+function usersPage(){
+ const rows=users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email||'—')}</td><td>${esc(roleName(u.role))}</td><td>${u.active===false?'<span class="badge no">Отключён</span>':'<span class="badge ok">Активен</span>'}</td><td>${u.id===currentUser.uid?'<span class="muted small">Текущий аккаунт</span>':`<div class="actions"><button class="secondary" data-action="toggle-user" data-id="${u.id}" data-active="${u.active===false?'false':'true'}">${u.active===false?'Включить':'Отключить'}</button><button class="secondary" data-action="copy-link">Копировать ссылку входа</button></div>`}</td></tr>`).join('');
+ return `<h2 class="section-title">${isOwner()?'Управление доступом':'Сборщики'}</h2>${isOwner()?`<section class="card"><h3>Создать пользователя</h3><form id="userForm"><div class="form-grid"><div class="field"><label>Имя</label><input id="uName" required maxlength="100"></div><div class="field"><label>Электронная почта для входа</label><input id="uEmail" type="email" required></div><div class="field"><label>Роль</label><select id="uRole"><option value="collector">Сборщик</option><option value="manager">Главный ответственный</option></select></div><div class="field"><label>Начальный пароль (не менее 6 символов)</label><input id="uPassword" type="password" minlength="6" required autocomplete="new-password"></div></div><button type="submit">Создать доступ</button><p class="foot">Создание учётной записи не должно разлогинить владельца: для этого используется отдельный экземпляр Firebase Auth. После создания передайте пользователю адрес сайта, email и пароль безопасным способом.</p></form></section>`:''}<section class="card"><h3>Пользователи</h3>${table(['Имя','Email','Роль','Статус','Действия'],rows)}</section><section class="card"><h3>Ссылка для входа</h3><div class="inline"><input id="appLink" readonly value="${esc(location.href.split('#')[0])}"><button data-action="copy-link">Копировать</button></div><p class="muted small">У всех одна ссылка на сайт, но каждый входит под своей учётной записью и видит только разрешённые данные.</p></section>`;
+}
+function reportsPage(){
+ const from = $('reportFrom')?.value || '';
+ const to = $('reportTo')?.value || '';
+ const inRange = x => (!from||String(x.date||'')>=from)&&(!to||String(x.date||'')<=to);
+ const cl=collectionsData.filter(x=>inRange(x)&& (canSeeAll()||x.collectorId===currentUser.uid));
+ const ex=expensesData.filter(x=>inRange(x)&& (canSeeAll()||x.paidBy===currentUser.uid||x.collectorId===currentUser.uid));
+ const tr=transfersData.filter(x=>inRange(x)&& (canSeeAll()||x.collectorId===currentUser.uid));
+ const sum=a=>a.reduce((s,x)=>s+Number(x.amount||0),0);
+ return `<h2 class="section-title">${canSeeAll()?'Отчёты':'Мой отчёт'}</h2><section class="card"><h3>Период</h3><div class="form-grid"><div class="field"><label>С даты</label><input id="reportFrom" type="date" value="${esc(from)}"></div><div class="field"><label>По дату</label><input id="reportTo" type="date" value="${esc(to)}"></div></div><button id="applyReport">Применить период</button> <button id="clearReport" class="secondary">За всё время</button></section><div class="grid stats">${stat('Сборы за период',rub(sum(cl)))}${stat('Подтверждённые расходы',rub(sum(ex.filter(x=>x.status==='approved'))))}${stat('Передачи подтверждены',rub(sum(tr.filter(x=>x.status==='confirmed'))))}${stat('Ожидают подтверждения',rub(sum(ex.filter(x=>x.status==='pending'))+sum(tr.filter(x=>x.status==='pending'))))}</div><section class="card"><h3>Поступления</h3>${table(['Дата','Сборщик','Сумма','Описание'],[...cl].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.collectorId))}</td><td>${rub(x.amount)}</td><td>${esc(x.note||'—')}</td></tr>`).join(''))}</section><section class="card"><h3>Расходы</h3>${table(['Дата','Кто оплатил','Сумма','Описание','Статус'],[...ex].sort(dateSort).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(personName(x.paidBy))}</td><td>${rub(x.amount)}</td><td>${esc(x.note||'—')}</td><td>${opBadge(x.status)}</td></tr>`).join(''))}</section>`;
+}
+function historyPage(){
+ const rows=[
+ ...collectionsData.map(x=>({date:x.date,createdAt:x.createdAt,kind:'Поступление',person:personName(x.collectorId),amount:x.amount,note:x.note||'',status:'approved',by:x.createdByName||'—'})),
+ ...transfersData.map(x=>({date:x.date,createdAt:x.createdAt,kind:'Передача',person:personName(x.collectorId),amount:x.amount,note:x.note||'',status:x.status,by:x.createdByName||'—'})),
+ ...expensesData.map(x=>({date:x.date,createdAt:x.createdAt,kind:'Расход',person:personName(x.paidBy),amount:x.amount,note:x.note||'',status:x.status,by:x.createdByName||'—'}))
+ ].sort(dateSort);
+ return `<h2 class="section-title">История операций</h2><section class="card"><p class="muted small">История поступлений, передач и расходов. Подтверждённые операции не удаляются через интерфейс.</p>${table(['Дата','Операция','Касса / человек','Сумма','Описание','Статус','Записал'],rows.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.kind)}</td><td>${esc(x.person)}</td><td>${rub(x.amount)}</td><td>${esc(x.note)}</td><td>${opBadge(x.status)}</td><td>${esc(x.by)}</td></tr>`).join(''))}</section>`;
+}
+function renderPage(){
+ if(!profile)return;
+ const allowed=navItems().some(x=>x[0]===activeTab);
+ if(!allowed)activeTab='dashboard';
+ const renderers={dashboard,collections:collectionsPage,transfers:transfersPage,expenses:expensesPage,cash:cashPage,users:usersPage,reports:reportsPage,history:historyPage};
+ $('page').innerHTML=(renderers[activeTab]||dashboard)();
+ bindPageActions();
+}
+function requireAmount(v){if(!Number.isFinite(v)||v<=0)throw new Error('Укажите сумму больше нуля.');}
+async function handleCollection(e){
+ e.preventDefault(); const amount=moneyInput('cAmount');requireAmount(amount);
+ const collectorId=canSeeAll()?($('cCollector')?.value||''):currentUser.uid;
+ if(!collectorId)throw new Error('Сначала создайте сборщика.');
+ await addDoc(collection(db,'collections'),{amount,date:$('cDate').value,collectorId,note:$('cNote').value.trim(),createdBy:currentUser.uid,createdByName:profile.name,createdAt:serverTimestamp()});
+ await addAudit('collection_created',{amount,collectorId,date:$('cDate').value});msg('Поступление сохранено.','success');await refresh();
+}
+async function handleTransfer(e){
+ e.preventDefault();const amount=moneyInput('tAmount');requireAmount(amount);
+ const collectorId=canSeeAll()?($('tCollector')?.value||''):currentUser.uid;
+ if(!collectorId)throw new Error('Не выбран сборщик.');
+ if(isCollector() && amount>collectorBalance(currentUser.uid))throw new Error('Сумма передачи превышает расчётный остаток у вас.');
+ await addDoc(collection(db,'transfers'),{amount,date:$('tDate').value,collectorId,note:$('tNote').value.trim(),status:'pending',createdBy:currentUser.uid,createdByName:profile.name,createdAt:serverTimestamp()});
+ await addAudit('transfer_created',{amount,collectorId,date:$('tDate').value});msg('Передача записана и ожидает подтверждения.','success');await refresh();
+}
+async function handleExpense(e){
+ e.preventDefault();const amount=moneyInput('eAmount');requireAmount(amount);
+ let payerType='collector',paidBy=currentUser.uid,collectorId=currentUser.uid,status='pending';
+ if(canSeeAll()){
+  const payer=$('ePayer').value;
+  if(payer==='manager'){payerType='manager';paidBy=currentUser.uid;collectorId=null;status='approved';}
+  else {payerType='collector';paidBy=payer;collectorId=payer;status='pending';}
+ }
+ if(isCollector()&&amount>collectorBalance(currentUser.uid))throw new Error('Расход превышает расчётный остаток у вас.');
+ const receipt=$('eReceipt').value.trim();
+ if(receipt && !/^https?:\/\//i.test(receipt))throw new Error('Ссылка на чек должна начинаться с https:// или http://');
+ await addDoc(collection(db,'expenses'),{amount,date:$('eDate').value,category:$('eCategory').value,note:$('eNote').value.trim(),receiptUrl:receipt,payerType,paidBy,collectorId,status,createdBy:currentUser.uid,createdByName:profile.name,createdAt:serverTimestamp()});
+ await addAudit('expense_created',{amount,payerType,paidBy,date:$('eDate').value,status});msg(status==='approved'?'Расход сохранён.':'Расход отправлен на подтверждение.','success');await refresh();
+}
+async function action(id,kind,button){
+ button.disabled=true;
+ try{
+  if(kind==='confirm-transfer'||kind==='reject-transfer'){
+   if(!canSeeAll())throw new Error('Недостаточно прав.');
+   const ref=doc(db,'transfers',id),snap=await getDoc(ref);if(!snap.exists())throw new Error('Передача не найдена.');
+   if(snap.data().status!=='pending')throw new Error('Эта передача уже обработана.');
+   await updateDoc(ref,{status:kind==='confirm-transfer'?'confirmed':'rejected',reviewedBy:currentUser.uid,reviewedByName:profile.name,reviewedAt:serverTimestamp()});
+   await addAudit(kind,{id,amount:snap.data().amount});
+   msg(kind==='confirm-transfer'?'Получение денег подтверждено.':'Передача отклонена.','success');
+  } else if(kind==='approve-expense'||kind==='reject-expense'){
+   if(!canSeeAll())throw new Error('Недостаточно прав.');
+   const ref=doc(db,'expenses',id),snap=await getDoc(ref);if(!snap.exists())throw new Error('Расход не найден.');
+   if(snap.data().status!=='pending')throw new Error('Этот расход уже обработан.');
+   await updateDoc(ref,{status:kind==='approve-expense'?'approved':'rejected',reviewedBy:currentUser.uid,reviewedByName:profile.name,reviewedAt:serverTimestamp()});
+   await addAudit(kind,{id,amount:snap.data().amount});msg(kind==='approve-expense'?'Расход подтверждён.':'Расход отклонён.','success');
+  } else if(kind==='toggle-user'){
+   if(!isOwner())throw new Error('Только владелец может управлять доступом.');
+   const ref=doc(db,'users',id),snap=await getDoc(ref);if(!snap.exists())throw new Error('Пользователь не найден.');
+   await updateDoc(ref,{active:snap.data().active===false?true:false,updatedAt:serverTimestamp()});
+   await addAudit('user_status_changed',{id});msg('Статус пользователя изменён.','success');
+  } else if(kind==='copy-link'){
+   await navigator.clipboard.writeText(location.href.split('#')[0]);msg('Ссылка для входа скопирована.','success');
   }
-
-  window.addPayment = function(id) {
-    const item = contracts.find(c => c.id === id);
-    if (!item) return;
-
-    const remaining = Number(item.totalAmount || 0) - Number(item.paidAmount || 0);
-    const payInput = prompt(`Внесите сумму оплаты для ${item.name}\n(Текущий остаток долга: ${remaining.toLocaleString('ru-RU')} ₽):`);
-    if (!payInput) return;
-
-    const paySum = parseFloat(payInput);
-    if (isNaN(paySum) || paySum <= 0) return;
-
-    const newPaid = Number(item.paidAmount || 0) + paySum;
-    const newRem = Math.max(0, Number(item.totalAmount || 0) - newPaid);
-    const author = item.responsible || 'Сотрудник';
-    const dateNow = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-    
-    const note = `[${dateNow} - ${author}]: Внесено ${paySum.toLocaleString('ru-RU')} ₽. Остаток долга: ${newRem.toLocaleString('ru-RU')} ₽.`;
-    
-    item.paidAmount = newPaid;
-    item.history = (item.history ? item.history + '\n' : '') + note;
-
-    if (newRem === 0) item.status = 'Оплачен';
-    saveToCloud(item);
-  };
-
-  window.toggleStatus = function(id) {
-    const item = contracts.find(c => c.id === id);
-    if (item) {
-      item.archived = !item.archived;
-      saveToCloud(item);
-    }
-  };
-
-  window.deleteContract = function(id) {
-    const pass = prompt('Введите пароль 127 для удаления договора:');
-    if (pass === '127') {
-      remove(ref(db, 'contracts/' + id));
-    } else if (pass !== null) {
-      alert('Неверный пароль!');
-    }
-  };
-
-  window.editContract = function(id) {
-    const item = contracts.find(c => c.id === id);
-    if (!item) return;
-
-    document.getElementById('editId').value = item.id;
-    document.getElementById('docNum').value = item.doc;
-    document.getElementById('clientName').value = item.name;
-    document.getElementById('clientPhone').value = item.phone;
-    document.getElementById('extraContact').value = item.extraContact || '';
-    document.getElementById('clientAddress').value = item.address || '';
-    document.getElementById('totalAmount').value = item.totalAmount || 0;
-    document.getElementById('paidAmount').value = item.paidAmount || 0;
-    document.getElementById('contractDate').value = item.contractDate || '';
-    document.getElementById('monthsCount').value = item.monthsCount || 12;
-    document.getElementById('clientType').value = item.type;
-    document.getElementById('responsible').value = item.responsible;
-    document.getElementById('controlDate').value = item.controlDate;
-    document.getElementById('processStatus').value = item.status;
-    document.getElementById('historyText').value = item.history || '';
-    document.getElementById('newNote').value = '';
-
-    document.getElementById('modalTitle').innerText = 'Редактировать договор';
-    modal.classList.add('active');
-  };
-
-  function updateDashboard() {
-    let tot = 0, paid = 0, overdueSum = 0;
-
-    contracts.filter(c => !c.archived).forEach(c => {
-      const cTotal = Number(c.totalAmount || 0);
-      const cPaid = Number(c.paidAmount || 0);
-      tot += cTotal;
-      paid += cPaid;
-      overdueSum += calculateCurrentOverdue(c);
-    });
-
-    const rem = tot - paid;
-
-    document.getElementById('sumTotal').innerText = tot.toLocaleString('ru-RU') + ' ₽';
-    document.getElementById('sumCurrentOverdue').innerText = overdueSum.toLocaleString('ru-RU') + ' ₽';
-    document.getElementById('sumRemaining').innerText = rem.toLocaleString('ru-RU') + ' ₽';
-    document.getElementById('sumPaid').innerText = paid.toLocaleString('ru-RU') + ' ₽';
-  }
-
-  function render() {
-    updateDashboard();
-
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const typeFilter = document.getElementById('filterType').value;
-    const statusFilter = document.getElementById('filterStatus').value;
-    const sortBy = document.getElementById('sortBy').value;
-    const todayStr = new Date().toISOString().split('T')[0];
-
-    let filtered = contracts.filter(item => {
-      const isArchived = item.archived || false;
-      const matchesTab = currentTab === 'active' ? !isArchived : isArchived;
-      const matchesSearch = item.name.toLowerCase().includes(search) || 
-                            item.doc.toLowerCase().includes(search) || 
-                            item.phone.toLowerCase().includes(search) ||
-                            (item.address && item.address.toLowerCase().includes(search));
-      const matchesType = typeFilter === 'all' || item.type === typeFilter;
-      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-      const matchesCallToday = !onlyCallsToday || (!isArchived && item.controlDate <= todayStr);
-
-      return matchesTab && matchesSearch && matchesType && matchesStatus && matchesCallToday;
-    });
-
-    filtered.sort((a, b) => {
-      const remA = Number(a.totalAmount || 0) - Number(a.paidAmount || 0);
-      const remB = Number(b.totalAmount || 0) - Number(b.paidAmount || 0);
-      
-      if (sortBy === 'controlAsc') return a.controlDate.localeCompare(b.controlDate);
-      if (sortBy === 'remDesc') return remB - remA;
-      if (sortBy === 'docAsc') return a.doc.localeCompare(b.doc);
-      return 0;
-    });
-
-    document.getElementById('countActive').innerText = contracts.filter(c => !c.archived).length;
-    document.getElementById('countClosed').innerText = contracts.filter(c => c.archived).length;
-
-    tableBody.innerHTML = '';
-    if (filtered.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; color:#999; padding:20px;">Нет данных</td></tr>';
-      return;
-    }
-
-    filtered.forEach(item => {
-      const tr = document.createElement('tr');
-      const cleanPhone = item.phone.replace(/[^0-9]/g, '');
-      const total = Number(item.totalAmount || 0);
-      const paid = Number(item.paidAmount || 0);
-      const remaining = total - paid;
-      const curOverdue = calculateCurrentOverdue(item);
-
-      if (!item.archived) {
-        if (item.controlDate < todayStr) tr.classList.add('overdue');
-        else if (item.controlDate === todayStr) tr.classList.add('today');
-      }
-
-      // Прямая ссылка api.whatsapp.com для принудительного открытия мобильного приложения WhatsApp
-      const waMessage = encodeURIComponent(`Здравствуйте, ${item.name}! Напоминаем по договору №${item.doc}. Остаток: ${remaining.toLocaleString('ru-RU')} ₽.`);
-      const waMainLink = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${waMessage}`;
-
-      let extraContactHtml = '';
-      if (item.extraContact) {
-        const extraPhoneMatch = item.extraContact.match(/\+?[0-9]{10,15}/);
-        if (extraPhoneMatch) {
-          const cleanExtra = extraPhoneMatch[0].replace(/[^0-9]/g, '');
-          const extraWa = `https://api.whatsapp.com/send?phone=${cleanExtra}`;
-          extraContactHtml = `<br><small style="color:var(--text-muted);">${item.extraContact}</small> <a href="${extraWa}" target="_blank" class="btn-whatsapp" style="font-size:0.65rem; padding:2px 5px;">WA</a>`;
-        } else {
-          extraContactHtml = `<br><small style="color:var(--text-muted);">${item.extraContact}</small>`;
-        }
-      }
-
-      let addressHtml = '<span style="color:#aaa;">—</span>';
-      if (item.address) {
-        const mapUrl = `https://yandex.ru/maps/?text=${encodeURIComponent(item.address)}`;
-        addressHtml = `<small>${item.address}</small><br><a href="${mapUrl}" target="_blank" class="btn-map">🗺️ Карта</a>`;
-      }
-
-      tr.innerHTML = `
-        <td><strong>${item.doc}</strong></td>
-        <td>
-          <b>${item.name}</b><br><small>${item.phone}</small><br>
-          <a href="${waMainLink}" target="_blank" class="btn-whatsapp">WhatsApp</a>
-          ${extraContactHtml}
-        </td>
-        <td>
-          <span style="color:var(--danger); font-weight:bold;">Просрочка: ${curOverdue.toLocaleString('ru-RU')} ₽</span><br>
-          <small style="color:var(--text-muted);">Остаток: ${remaining.toLocaleString('ru-RU')} ₽</small><br>
-          <small style="color:var(--text-muted);">Всего: ${total.toLocaleString('ru-RU')} ₽</small>
-        </td>
-        <td>${addressHtml}</td>
-        <td><span class="badge badge-${item.type}">${item.type}</span></td>
-        <td>${item.responsible}</td>
-        <td><b>${item.controlDate}</b></td>
-        <td>${item.status}</td>
-        <td><div class="history-log">${item.history || 'Нет записей'}</div></td>
-        <td>
-          <div class="action-btns">
-            <button class="btn btn-pay" style="padding:4px 8px; font-size:0.75rem;" onclick="addPayment(${item.id})">+ Оплата</button>
-            <button class="btn btn-edit" style="padding:4px 8px; font-size:0.75rem;" onclick="editContract(${item.id})">Изм.</button>
-            <button class="btn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleStatus(${item.id})">${item.archived ? 'Восст.' : 'В архив'}</button>
-            <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteContract(${item.id})">Удалить</button>
-          </div>
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
-  }
-
-  document.getElementById('btnCallSchedule').onclick = function() {
-    onlyCallsToday = !onlyCallsToday;
-    this.style.background = onlyCallsToday ? 'var(--danger)' : 'var(--text-muted)';
-    this.innerText = onlyCallsToday ? 'Показаны: Точки контроля' : '📅 Кому звонить сегодня';
-    render();
-  };
-
-  document.getElementById('openModalBtn').onclick = () => {
-    document.getElementById('addContractForm').reset();
-    document.getElementById('editId').value = '';
-    document.getElementById('contractDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('modalTitle').innerText = 'Новый договор';
-    modal.classList.add('active');
-  };
-
-  document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('active');
-
-  document.getElementById('addContractForm').onsubmit = (e) => {
-    e.preventDefault();
-    const editId = document.getElementById('editId').value;
-    const id = editId ? Number(editId) : Date.now();
-    const author = document.getElementById('responsible').value;
-    const dateNow = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-    
-    let currentHistory = document.getElementById('historyText').value;
-    const newNote = document.getElementById('newNote').value.trim();
-
-    if (newNote !== '') {
-      currentHistory += `${currentHistory ? '\n' : ''}[${dateNow} - ${author}]: ${newNote}`;
-    }
-
-    const contractData = {
-      id: id,
-      doc: document.getElementById('docNum').value,
-      name: document.getElementById('clientName').value,
-      phone: document.getElementById('clientPhone').value,
-      extraContact: document.getElementById('extraContact').value,
-      address: document.getElementById('clientAddress').value,
-      totalAmount: Number(document.getElementById('totalAmount').value),
-      paidAmount: Number(document.getElementById('paidAmount').value),
-      contractDate: document.getElementById('contractDate').value,
-      monthsCount: Number(document.getElementById('monthsCount').value),
-      type: document.getElementById('clientType').value,
-      responsible: author,
-      controlDate: document.getElementById('controlDate').value,
-      status: document.getElementById('processStatus').value,
-      history: currentHistory,
-      archived: false
-    };
-
-    saveToCloud(contractData);
-    document.getElementById('addContractForm').reset();
-    modal.classList.remove('active');
-  };
-
-  document.getElementById('tabActive').onclick = function() {
-    this.classList.add('active');
-    document.getElementById('tabClosed').classList.remove('active');
-    currentTab = 'active';
-    render();
-  };
-
-  document.getElementById('tabClosed').onclick = function() {
-    this.classList.add('active');
-    document.getElementById('tabActive').classList.remove('active');
-    currentTab = 'closed';
-    render();
-  };
-
-  document.getElementById('searchInput').oninput = render;
-  document.getElementById('filterType').onchange = render;
-  document.getElementById('filterStatus').onchange = render;
-  document.getElementById('sortBy').onchange = render;
+  await refresh();
+ }catch(err){msg(err.message||'Не удалось выполнить действие.','error');button.disabled=false;}
+}
+function bindPageActions(){
+ $('collectionForm')?.addEventListener('submit',e=>runForm(e,handleCollection));
+ $('transferForm')?.addEventListener('submit',e=>runForm(e,handleTransfer));
+ $('expenseForm')?.addEventListener('submit',e=>runForm(e,handleExpense));
+ $('userForm')?.addEventListener('submit',e=>runForm(e,handleCreateUser));
+ $('applyReport')?.addEventListener('click',()=>renderPage());
+ $('clearReport')?.addEventListener('click',()=>{const a=$('reportFrom'),b=$('reportTo');if(a)a.value='';if(b)b.value='';renderPage();});
+ $('page').querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.id,b.dataset.action,b)));
+}
+async function runForm(e,fn){try{setBusy(true);await fn(e);}catch(err){msg(err.message||'Ошибка сохранения.','error');}finally{setBusy(false);}}
+async function handleCreateUser(e){
+ e.preventDefault();if(!isOwner())throw new Error('Создавать пользователей может только владелец.');
+ const name=$('uName').value.trim(),email=$('uEmail').value.trim().toLowerCase(),password=$('uPassword').value,role=$('uRole').value;
+ if(!name)throw new Error('Укажите имя.');
+ if(!['collector','manager'].includes(role))throw new Error('Недопустимая роль.');
+ if(users.filter(u=>u.active!==false&&u.role!=='owner').length>=4)throw new Error('Максимум 5 пользователей вместе с владельцем: можно создать не более четырёх ответственных и сборщиков.');
+ let secondary;
+ try{
+  secondary=initializeApp(firebaseConfig,'secondary-'+Date.now());
+  const secondaryAuth=getAuth(secondary);
+  const credential=await createUserWithEmailAndPassword(secondaryAuth,email,password);
+  await setDoc(doc(db,'users',credential.user.uid),{name,email,role,active:true,createdAt:serverTimestamp(),createdBy:currentUser.uid});
+  await signOut(secondaryAuth);
+  await addAudit('user_created',{uid:credential.user.uid,name,email,role});
+  msg('Пользователь создан. Передайте ему ссылку сайта, email и пароль.','success');
+ }finally{if(secondary){try{await deleteApp(secondary);}catch{}}}
+ await refresh();
+}
+async function refresh(){
+ if(!currentUser)return;
+ await loadData();renderNav();renderPage();
+}
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();try{setBusy(true);await signInWithEmailAndPassword(auth,$('loginEmail').value.trim(),$('loginPassword').value);$('loginMsg').classList.add('hidden');}catch(err){loginMsg(friendlyAuthError(err),'error');}finally{setBusy(false);}
+});
+$('signOutBtn').onclick=()=>signOut(auth);
+function friendlyAuthError(e){const c=e.code||'';if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found'))return'Неверная почта или пароль.';if(c.includes('too-many-requests'))return'Слишком много попыток. Попробуйте позже.';if(c.includes('email-already-in-use'))return'Пользователь с такой почтой уже существует.';return e.message||'Не удалось войти.';}
+onAuthStateChanged(auth,async user=>{
+ currentUser=user;
+ if(!user){profile=null;$('loginView').classList.remove('hidden');$('appView').classList.add('hidden');$('signOutBtn').classList.add('hidden');$('userLine').textContent='';return;}
+ try{
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists()||snap.data().active===false){await signOut(auth);loginMsg('Для этой учётной записи не назначен активный доступ. Обратитесь к владельцу.','error');return;}
+  profile={id:user.uid,...snap.data()};
+  if(!['owner','manager','collector'].includes(profile.role)){await signOut(auth);loginMsg('У этой учётной записи некорректная роль.','error');return;}
+  $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');$('signOutBtn').classList.remove('hidden');$('userLine').textContent=`${profile.name||user.email} · ${roleName(profile.role)}`;
+  activeTab='dashboard';await refresh();
+ }catch(err){console.error(err);await signOut(auth);loginMsg('Не удалось загрузить данные. Проверьте Firestore Security Rules и настройку Firebase.','error');}
+});
 </script>
-
 </body>
 </html>
