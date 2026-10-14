@@ -4,28 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#172554">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Касса</title>
 <style>
 :root{--navy:#172554;--blue:#2563eb;--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c;--amber:#a16207}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
-header{background:var(--navy);color:#fff;padding:16px 20px;display:flex;gap:12px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+header{background:var(--navy);color:#fff;padding:16px 20px;display:flex;gap:12px;align-items:center;justify-content:flex-start;position:sticky;top:0;z-index:5}
 header h1{margin:0;font-size:22px}header .sub{font-size:12px;opacity:.8}.wrap{max-width:1200px;margin:auto;padding:18px}
 button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;cursor:pointer;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e2e8f0;color:#172033}.danger{background:#b91c1c}.success{background:#15803d}.small{padding:6px 9px;font-size:13px}
 input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:var(--text)}label{font-size:13px;color:#334155;display:block;margin:9px 0 5px}textarea{min-height:70px;resize:vertical}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 3px 12px #0f172a08;margin-bottom:14px}.metric .label{color:var(--muted);font-size:13px}.metric .value{font-size:25px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{background:#e2e8f0;color:#334155}.tabs button.active{background:var(--navy);color:#fff}.hidden{display:none!important}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;color:var(--muted);white-space:nowrap}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;background:#e2e8f0}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}.notice{padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:14px;margin-bottom:14px}.error{background:#fef2f2;color:#991b1b}.success-note{background:#f0fdf4;color:#166534}.auth{max-width:430px;margin:7vh auto;padding:22px}.auth h2{margin-top:0}.actions{display:flex;gap:6px;flex-wrap:wrap}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.section-title h2{font-size:18px;margin:0 0 12px}.foot{font-size:12px;color:var(--muted);padding:18px 0}.pill{padding:4px 8px;border-radius:7px;background:#f1f5f9;font-size:12px}
-@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.wrap{padding:12px}.metric .value{font-size:21px}header{padding:13px 14px}}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.wrap{padding:12px}.metric .value{font-size:21px}header{padding:13px 14px}body{padding-bottom:env(safe-area-inset-bottom)}button{min-height:44px}.tabs{position:sticky;top:58px;z-index:4;background:var(--bg);padding:8px 0}.tabs button{flex:1 1 auto}.card{border-radius:18px}}
 @media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.metric .value{font-size:19px}th,td{padding:8px}}
 </style>
 </head>
 <body>
-<header><div><h1>Касса</h1><div class="sub">Касса строительства · учёт сборов, передач и расходов</div></div><div class="row" style="flex:0 1 auto"><span id="who" class="sub"></span><button id="logoutBtn" class="secondary small hidden">Выйти</button></div></header>
-<div id="authView" class="wrap">
-  <div class="card auth">
-    <h2>Вход в «Касса»</h2>
-    <div id="authNotice" class="notice hidden"></div>
-    <p>Вход без логина и пароля — по персональной ссылке, которую выдал владелец.</p>
-  </div>
-</div>
+<header><div><h1>Касса</h1></div></header>
+<div id="authView" class="wrap hidden"><div class="card auth"><div id="authNotice" class="notice hidden"></div></div></div>
 <div id="appView" class="wrap hidden">
   <div id="globalNotice" class="notice hidden"></div>
   <div class="tabs" id="tabs"></div>
@@ -195,7 +193,7 @@ function table(headers,rows){if(!rows.length)return "<p class='muted'>Запис
 function renderCollections(){
   const rows=visibleCollections().map(x=>[fmtDate(x.date),money(x.amount),esc(x.note||"—"),esc(fmtUser(x.createdBy)),esc(x.createdBy===currentUser.uid?"Вы":"Сборщик")]);
   $("collectionsTable").innerHTML=table(["Дата","Сумма","Описание","Кто внёс запись",""],rows);
-  $("collectionForm").classList.toggle("hidden",profile.role!=="collector");
+  $("collectionForm").classList.remove("hidden");
 }
 function renderTransfers(){
  const rows=visibleTransfers().map(x=>[fmtDate(x.date),money(x.amount),esc(fmtUser(x.collectorUid)),statusBadge(x.status),esc(x.note||"—"),canApprove()&&x.status==="pending"?`<div class="actions"><button class="small success" data-transfer="${x.id}" data-decision="approved">Подтвердить</button><button class="small danger" data-transfer="${x.id}" data-decision="rejected">Отклонить</button></div>`:"—"]);
@@ -251,13 +249,13 @@ function renderReport(){
  const totalC=c.reduce((s,x)=>s+Number(x.amount||0),0),totalE=e.reduce((s,x)=>s+Number(x.amount||0),0);
  $("reportContent").innerHTML=`<div class="grid"><div class="card metric"><div class="label">Поступления</div><div class="value">${money(totalC)}</div></div><div class="card metric"><div class="label">Подтверждённые расходы</div><div class="value">${money(totalE)}</div></div><div class="card metric"><div class="label">Передачи (сумма записей)</div><div class="value">${money(tr.reduce((s,x)=>s+Number(x.amount||0),0))}</div></div><div class="card metric"><div class="label">Поступления минус расходы</div><div class="value">${money(totalC-totalE)}</div></div></div>`;
 }
-function renderPage(){if(!profile)return;buildTabs();renderDashboard();renderCollections();renderTransfers();renderExpenses();if(canApprove())renderApprovals();if(isOwner())renderUsers();renderHistory();renderReport();$("collectionForm").classList.toggle("hidden",profile.role!=="collector");$("transferForm").classList.toggle("hidden",profile.role!=="collector");$("expenseForm").classList.toggle("hidden",!(profile.role==="collector"||canSeeAll()));}
+function renderPage(){if(!profile)return;buildTabs();renderDashboard();renderCollections();renderTransfers();renderExpenses();if(canApprove())renderApprovals();if(isOwner())renderUsers();renderHistory();renderReport();$("collectionForm").classList.remove("hidden");$("transferForm").classList.remove("hidden");$("expenseForm").classList.remove("hidden");}
 async function addAudit(action,details={}){
  const key=push(ref(db,"audit")).key;
  await set(ref(db,"audit/"+key),{action,details,actorUid:currentUser.uid,actorName:myName(),createdAt:stamp()});
 }
 function friendlyError(err){const c=err?.code||"";if(c.includes("operation-not-allowed"))return "В Firebase нужно один раз включить Authentication → Anonymous (анонимный вход).";if(c.includes("permission-denied"))return "Нет доступа. Проверьте роль пользователя и правила Firebase.";if(c.includes("email-already-in-use"))return "Этот email уже зарегистрирован.";if(c.includes("invalid-email"))return "Неверный формат email.";if(c.includes("weak-password"))return "Пароль должен содержать не менее 6 символов.";if(c.includes("wrong-password")||c.includes("invalid-credential"))return "Неверная почта или пароль.";if(c.includes("network-request-failed"))return "Нет соединения с интернетом.";return err?.message||"Неизвестная ошибка."}
-async function handleCollection(ev){ev.preventDefault();const amount=Number($("collectionAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const key=push(ref(db,"collections")).key;const data={date:$("collectionDate").value,amount,note:$("collectionNote").value.trim(),createdBy:currentUser.uid,createdByName:myName(),status:"approved",createdAt:stamp()};try{await set(ref(db,"collections/"+key),data);await addAudit("collection_created",{recordId:key,amount});$("collectionForm").reset();setDefaults();await loadData();notice("Поступление сохранено.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
+async function handleCollection(ev){ev.preventDefault();const amount=Number($("collectionAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const key=push(ref(db,"collections")).key;const data={date:$("collectionDate").value||dateNow(),amount,note:$("collectionNote").value.trim(),createdBy:currentUser.uid,createdByName:myName(),status:"approved",createdAt:stamp()};try{await set(ref(db,"collections/"+key),data);await addAudit("collection_created",{recordId:key,amount});$("collectionForm").reset();setDefaults();await loadData();showPage("collections");notice("Поступление сохранено.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
 async function handleTransfer(ev){ev.preventDefault();const amount=Number($("transferAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const bal=balanceFor(currentUser.uid).balance;if(profile.role==="collector"&&amount>bal)return alert("Сумма превышает расчётный остаток у вас. Проверьте поступления, передачи и подтверждённые расходы.");const key=push(ref(db,"transfers")).key;const data={date:$("transferDate").value,amount,note:$("transferNote").value.trim(),collectorUid:currentUser.uid,collectorName:myName(),createdBy:currentUser.uid,status:"pending",createdAt:stamp()};try{await set(ref(db,"transfers/"+key),data);await addAudit("transfer_requested",{recordId:key,amount});$("transferForm").reset();setDefaults();await loadData();notice("Передача отправлена на подтверждение.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
 async function handleExpense(ev){ev.preventDefault();const amount=Number($("expenseAmount").value);if(!Number.isFinite(amount)||amount<=0)return alert("Введите сумму больше нуля.");const purpose=$("expensePurpose").value.trim();if(!purpose)return alert("Укажите назначение расхода.");const file=$("expenseReceipt").files[0];if(file&&file.size>2*1024*1024)return alert("Файл чека должен быть не больше 2 МБ.");const key=push(ref(db,"expenses")).key;let receiptUrl="";try{if(file){const path=`receipts/${currentUser.uid}/${key}_${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;const r=storageRef(storage,path);await uploadBytes(r,file);receiptUrl=await getDownloadURL(r)}const immediate=canSeeAll();const data={date:$("expenseDate").value,amount,purpose,note:$("expenseNote").value.trim(),createdBy:currentUser.uid,createdByName:myName(),status:immediate?"approved":"pending",createdAt:stamp(),receiptUrl};await set(ref(db,"expenses/"+key),data);await addAudit("expense_created",{recordId:key,amount,purpose,status:data.status});$("expenseForm").reset();setDefaults();await loadData();notice(immediate?"Расход сохранён.":"Расход отправлен ответственному на подтверждение.",false,true)}catch(e){notice(friendlyError(e),true,true)}}
 async function handleCreateUser(ev){
@@ -298,7 +296,7 @@ async function enterApp(user){
  currentUser=user;
  if(!profile){const p=await get(ref(db,"users/"+user.uid));if(!p.exists())throw new Error("Для этой ссылки не назначена роль.");profile={uid:user.uid,...p.val()}}
  if(profile.active===false){await signOut(auth);throw new Error("Доступ отключён.")}
- $("authView").classList.add("hidden");$("appView").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");$("who").textContent=myName()+" · "+roleName(profile.role);
+ $("authView").classList.add("hidden");$("appView").classList.remove("hidden");
  hideNotice(true);await loadData();showPage("dashboard");
 }
 
@@ -314,6 +312,7 @@ $("exportCsv").onclick=()=>{
  const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="kassa-report.csv";a.click();URL.revokeObjectURL(a.href)
 };
 setDefaults();
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){navigator.serviceWorker.register("./sw.js").catch(()=>{});}
 onAuthStateChanged(auth,async user=>{
  currentUser=user;
  try{
